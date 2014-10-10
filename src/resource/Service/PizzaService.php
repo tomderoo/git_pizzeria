@@ -185,7 +185,7 @@ class PizzaService {
         foreach ($mandje->bestelling as $bestellijn) {
             $bestellijnDAO->createBestellijn($bestellingId, $bestellijn->product_id, $bestellijn->aantal, $bestellijn->prijs);
         }
-        return $mandje;
+        return true;
     }
     
 }

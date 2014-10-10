@@ -50,9 +50,8 @@ switch ($_POST["show"]) {
     
     case "bestel":
         $mandje = json_decode($_POST["mandje"]);
-        if($result = $service->bevestigMandje($mandje)) {
+        if($service->bevestigMandje($mandje)) {
             echo(json_encode(1));
-            print_r($result);
         } else {
             echo(json_encode(0));
         }

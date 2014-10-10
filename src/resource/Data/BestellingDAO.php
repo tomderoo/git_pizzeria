@@ -41,7 +41,7 @@ class BestellingDAO {
     
     public function maakNieuweBestelling($klant_id, $besteldatum, $leverdatum, $koerier_brief, $koerier_debrief, $status, $opmerking) {
         $dbh = new PDO(dbConfig::$db_conn, dbConfig::$db_user, dbConfig::$db_pass);
-        $sql = $dbh->prepare("INSERT INTO bestelling (klant_id, besteldatum, leverdatum, koerier_brief, koerier_debrief, status, opmerking) VALUES (:klant_id, :besteldatum, :leverdatum, :koerier_brief, :koerier_debrief, :status, :opmerking)");
+        $sql = $dbh->prepare("INSERT INTO bestelling (klant_id, besteldatum, leverdatum, koerier_brief, koerier_debrief, status, klant_opmerking) VALUES (:klant_id, :besteldatum, :leverdatum, :koerier_brief, :koerier_debrief, :status, :opmerking)");
         $sql->bindParam(":klant_id", $klant_id);
         $sql->bindParam(":besteldatum", $besteldatum);
         $sql->bindParam(":leverdatum", $leverdatum);
