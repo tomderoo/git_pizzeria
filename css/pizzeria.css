@@ -1,0 +1,233 @@
+/* 
+    Created on : 8-okt-2014, 15:54:05
+    Author     : tom.deroo
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #4c0009;
+}
+
+div#bgimg {
+    height: 100vh;
+    width: 100vw;
+    background: url('../img/back-perfectpizza.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: fixed;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+
+div#wrapper {
+    box-sizing: border-box;
+    position: relative;
+    width: 920px;
+    padding: 10px;
+    margin: 10px auto;
+    background-color: white;
+    opacity: 1;
+    box-shadow: #303030 1px 1px 15px;
+    border-radius: 20px;
+    overflow: auto;
+}
+
+a:link, a:visited {
+    color: #79655e;
+    text-decoration: underline;
+}
+
+a:hover, a:active {
+    color: #29150e;
+    text-decoration: underline;
+}
+
+article h3 {
+    border-bottom: 1px solid #4c0009;
+    margin-left: 0;
+}
+
+header, article {
+    width: 900px;
+    margin: auto;
+    clear: both;
+}
+
+header h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 4em;
+    line-height: 1em;
+    color: #2c0009;
+    margin: 0;
+    padding: 20px 20px 0px 20px;
+    border-bottom: 2px solid #63000C;
+}
+
+header h1 a:link, header h1 a:active, header h1 a:hover, header h1 a:visited {
+    color: #2c0009;
+    text-decoration: none;
+}
+
+header h2 {
+    font-family: 'Oswald', sans-serif;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    padding: 0 20px 0px;
+    font-weight: 300;
+    color: #63000c;
+}
+
+div#aside {
+    width: 100%;
+    text-align: right;
+    overflow: auto;
+    background-color: #fcf4f4;
+    
+}
+
+div#klant, div#mandje {
+    box-sizing: border-box;
+    vertical-align: top;
+    line-height: 20px;
+    float: right;
+    background-color: #78000E;
+    color: white;
+    padding: 3px 10px;
+    margin: 5px;
+    border-radius: 20px;
+}
+
+div#aside a {
+    text-decoration: none;
+    vertical-align: top;
+    color: white;
+}
+
+div#aside a:hover, div#aside a:active {
+    text-decoration: underline;
+}
+
+/* * * * * Dropdown quickmenu * * * * */
+
+div#quickmenu {
+
+}
+
+ul#menu, ul#menu ul.sub-menu {
+    padding:0;
+    margin: 0;
+}
+
+ul#menu li, ul#menu ul.sub-menu li {
+    list-style-type: none;
+    display: inline-block;
+}
+
+ul#menu li a {
+    min-width: 100px;
+    text-align: center;
+    
+}
+
+ul#menu li a, ul#menu li ul.sub-menu li a {
+    text-decoration: none;
+    color: #fff;
+    background-color: #4c0009;
+    padding: 5px;
+    display: inline-block;
+}
+
+ul#menu li {
+    position: relative;
+}
+
+ul#menu li ul.sub-menu {
+    display:none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 200px;
+    border-top: 1px solid #fff;
+}
+
+ul#menu li ul.sub-menu li a {
+    display: block;
+    min-width: 100px;
+    text-align: left;
+}
+
+ul#menu li:hover ul.sub-menu {
+    display:block;
+}
+
+ul#menu li ul.sub-menu li a:hover {
+    background-color: #a86c6c;
+}
+
+li.searchmenu {
+    background-color: #4c0009;
+    line-height: 30px;
+    width: 333px;
+    box-sizing: border-box;
+    padding: 0 6px;
+}
+
+/* * * * * Error * * * * */
+
+div#error {
+    background-color: #fee;
+    color: #c44;
+    border: 1px solid #c44;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0;
+}
+
+div#error p, div#info p {
+    margin: 0;
+    padding: 0;
+}
+
+/* * * * * Pizzalijst * * * * */
+
+.pizzalijst_pizza {
+    /*outline: 1px dotted red;*/
+    padding: 10px;
+    overflow: auto;
+    margin-bottom: 10px;
+    box-shadow: #63000C 1px 1px 10px;
+    border-radius: 10px;
+}
+
+.pizzalijst_pizza img {
+    box-shadow: #63000C 1px 1px 10px;
+    margin-right: 1em;
+}
+/* * * * * Info * * * * */
+
+div#info {
+    background-color: #efe;
+    color: #484;
+    border: 1px solid #484;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0;
+}
+
+.floatleft {
+    float: left;
+}
+
+.floatright {
+    float: right;
+}
+
+.clear {
+    clear: both;
+}

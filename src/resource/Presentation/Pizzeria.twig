@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset=utf-8>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AuthenticPizza - De smaak van toen</title>
+        <link rel="stylesheet" type="text/css" href="css/pizzeria.css">
+        <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.4.custom.js"></script>
+        <script type="text/javascript" src="js/pizzeria.js"></script>
+    </head>
+
+    <body>
+        <div id="bgimg"></div>
+        
+        <div id="wrapper">
+            
+            <header>
+                <div id="banner">
+                    <h1><a href="index.php">AuthenticPizza</a></h1>
+                    <h2>De smaak van toen</h2>
+                </div>
+                <div id="aside">
+                    <div id="klant">
+                        <img src="img/user20x.png" alt="User">
+                        <div id="klant_identiteit"></div>
+                        <div id="klant_actie_in">
+                            <a href="#">Aanmelden of registreren</a>
+                        </div>
+                        <div id="klant_actie_uit">
+                            <a href="#">Uitloggen</a>
+                        </div>
+                    </div>
+                    <div id="mandje">
+                        <img src="img/basket20x.png" alt="Mandje">
+                        <div id="mandje_aantal"></div>
+                        <div id="mandje_euro"></div>
+                        <div id="mandje_acties">
+                            <a id="bekijk_mandje" href="#">Bekijken</a>
+                            /
+                            <a id="ledig_mandje" href="#">Ledigen</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="quickmenu" class="clear">
+                    <ul id="menu">
+                        <li><a id="link_selectie" href="#">Huisselectie</a></li>
+                        <li><a id="link_volledigelijst" href="#">Volledige lijst</a></li>
+                    </ul>
+                </div>
+            </header>
+            
+            <article>
+                <div id="error">Uw browser beschikt niet over Javascript of u hebt Javascript uitgeschakeld.<br>Update uw browser of schakel Javascript in om van deze site gebruik te maken.</div>
+                
+                <div id="info"></div>
+                
+                <h3 id="pizzalijst_titel">Onze pizza's</h3>
+                
+                <div id="pizzalijst_container">
+                    
+                </div>
+                
+            </article>
+            
+            {% include 'scripttimer.twig' %}
+        </div>
+    </body>
+</html>
