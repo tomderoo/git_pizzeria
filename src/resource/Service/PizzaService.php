@@ -175,17 +175,17 @@ class PizzaService {
         // zoek de klant
         $klant_id = $mandje->klant_id;
         // maak een bestelling
-        $besteldatum = datetime();
+        $besteldatum = date("Y-m-d H:i:s");
         $leverdatum = $mandje->leverdatum;
-        $opmerking = $mandje->klant_opmerking;
+        $opmerking = ""; //$mandje->klant_opmerking;
         $bestellingDAO = new BestellingDAO();
         $bestellingId = $bestellingDAO->maakNieuweBestelling($klant_id, $besteldatum, $leverdatum, "", "", 0, $opmerking);
         // maak de aparte bestellijnen
         $bestellijnDAO = new BestellijnDAO();
         foreach ($mandje->bestelling as $bestellijn) {
-            $bestellijnDAO->createBestellijn($bestellingId, $bestellijn->product_id, $bestellijn->aantal, $bestellijn->prijs_hist);
+            $bestellijnDAO->createBestellijn($bestellingId, $bestellijn->product_id, $bestellijn->aantal, $bestellijn->prijs);
         }
-        return true;
+        return $mandje;
     }
     
 }

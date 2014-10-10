@@ -102,6 +102,10 @@ div#klant, div#mandje {
     border-radius: 20px;
 }
 
+div#klant div, div#mandje div {
+    display: inline-block;
+}
+
 div#aside a {
     text-decoration: none;
     vertical-align: top;
@@ -189,26 +193,11 @@ div#error {
     margin: 5px 0;
 }
 
-div#error p, div#info p {
+div#error p, div#info p, div#interactie p {
     margin: 0;
     padding: 0;
 }
 
-/* * * * * Pizzalijst * * * * */
-
-.pizzalijst_pizza {
-    /*outline: 1px dotted red;*/
-    padding: 10px;
-    overflow: auto;
-    margin-bottom: 10px;
-    box-shadow: #63000C 1px 1px 10px;
-    border-radius: 10px;
-}
-
-.pizzalijst_pizza img {
-    box-shadow: #63000C 1px 1px 10px;
-    margin-right: 1em;
-}
 /* * * * * Info * * * * */
 
 div#info {
@@ -220,6 +209,39 @@ div#info {
     text-align: center;
     margin: 5px 0;
 }
+
+/* * * * * Interactie * * * * */
+
+div#interactie {
+    background-color: #eff;
+    color: #488;
+    border: 1px solid #488;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0;
+}
+
+/* * * * * Pizzalijst * * * * */
+
+.pizzalijst_pizza {
+    /*outline: 1px dotted red;*/
+    padding: 10px;
+    overflow: auto;
+    margin-bottom: 10px;
+    box-shadow: #63000C 1px 1px 10px;
+    border-radius: 10px;
+    
+}
+
+.pizzalijst_pizza img {
+    margin-right: 1em;
+}
+
+.knop_inmandje {
+    float: right;
+}
+/* * * * * OVERIGE * * * * */
 
 .floatleft {
     float: left;

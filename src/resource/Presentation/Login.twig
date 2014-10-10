@@ -2,7 +2,6 @@
 <html>
     <head>
         <meta charset=utf-8>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>AuthenticPizza - De smaak van toen</title>
         <link rel="stylesheet" type="text/css" href="css/pizzeria.css">
         <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
@@ -58,14 +57,37 @@
                 
                 <div id="interactie">Test</div>
                 
-                <h3 id="pizzalijst_titel">Onze pizza's</h3>
-                
-                <div id="pizzalijst_container">
-                    
-                </div>
-                
+                <h3>Aanmelden</h3>
+                <form action="action.php" method="post">
+                    <input type="hidden" name="act" value="login">
+                    <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
+                    <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
+                    <input type="submit" value="Aanmelden">
+                </form>
             </article>
             
+            <article>
+                <h3>Registreren</h3>
+                <form action="action.php" method="post">
+                    Login-gegevens:<br>
+                    <input type="hidden" name="act" value="register">
+                    <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
+                    <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
+                    <hr>
+                    Persoonsgegevens:<br>
+                    <input type="text" size="40" name="vnaam" placeholder="Voornaam" required>
+                    <input type="text" size="40" name="anaam" placeholder="Achternaam" required><br>
+                    <br>
+                    <input type="text" size="40" name="straat" placeholder="Straat" required>
+                    <input type="text" size="10" name="huisnr" placeholder="Huisnr." required>
+                    <input type="text" size="5" name=busnr" placeholder="Busnr."><br>
+                    <input type="text" size="40" name="gemeente" placeholder="Gemeente" required>
+                    <input type="text" size="10" name="postcode" placeholder="Postcode" required><br>
+                    <hr>
+                    <input type="submit" value="Registreren">
+                </form>
+            </article>
+       
             {% include 'scripttimer.twig' %}
         </div>
     </body>

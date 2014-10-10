@@ -1,5 +1,5 @@
 <?php
-if (!$_GET["show"]) {
+if (!$_POST["show"]) {
     header("location: index.php");
 }
 
@@ -12,7 +12,7 @@ $classLoader->register();
 
 $service = new PizzaService();
 
-switch ($_GET["show"]) {
+switch ($_POST["show"]) {
     case "all":
         try {
             $producten = $service->geefAlleProducten();
@@ -31,6 +31,31 @@ switch ($_GET["show"]) {
             $producten= json_encode("VOID");
         }
         echo($producten);
+        break;
+    
+    case "klant":
+        $email = $_POST["email"];
+        $paswoord = $_POST["paswoord"];
+        try {
+            $klant = $service->loginKlant($email, $paswoord);
+        } catch (resource\Exception\KlantNietGevondenException $ex) {
+            echo json_encode($error);
+            break;
+        } catch (resource\Exception\FoutPaswoordException $ex) {
+            echo json_encode($error);
+            break;
+        }
+        echo json_encode($klant);
+        break;
+    
+    case "bestel":
+        $mandje = json_decode($_POST["mandje"]);
+        if($result = $service->bevestigMandje($mandje)) {
+            echo(json_encode(1));
+            print_r($result);
+        } else {
+            echo(json_encode(0));
+        }
         break;
 
     default:
