@@ -54,7 +54,7 @@ class KlantDAO {
     
     public function createKlant($anaam, $vnaam, $straat, $huisnr, $busnr, $postcode, $gemeente, $telefoon, $email, $paswoord, $status, $info) {
         $dbh = new PDO(dbConfig::$db_conn, dbConfig::$db_user, dbConfig::$db_pass);
-        $sql = $dbh->prepare("INSERT INTO klanten (anaam, vnaam, adres, huisnr, busnr, postcode, gemeente, telefoon, email, paswoord, status, info) VALUES (:anaam, :vnaam, :straat, :huisnr, :busnr, :postcode, :gemeente, :telefoon, :email, :paswoord, :status, :info)");
+        $sql = $dbh->prepare("INSERT INTO klanten (anaam, vnaam, straat, huisnr, busnr, postcode, gemeente, telefoon, email, paswoord, status, info) VALUES (:anaam, :vnaam, :straat, :huisnr, :busnr, :postcode, :gemeente, :telefoon, :email, :paswoord, :status, :info)");
         $sql->bindParam(":anaam", $anaam);
         $sql->bindParam(":vnaam", $vnaam);
         $sql->bindParam(":straat", $straat);
@@ -67,6 +67,7 @@ class KlantDAO {
         $sql->bindParam(":paswoord", $paswoord);
         $sql->bindParam(":status", $status);
         $sql->bindParam(":info", $info);
+        print_r($sql);
         $sql->execute();
     }
     

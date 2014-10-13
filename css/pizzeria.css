@@ -4,6 +4,9 @@
     Git repo is actief!
 */
 
+
+/* * * * * ALGEMEEN * * * * */
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -47,10 +50,7 @@ a:hover, a:active {
     text-decoration: underline;
 }
 
-article h3 {
-    border-bottom: 1px solid #4c0009;
-    margin-left: 0;
-}
+/* * * * * HEADER * * * * */
 
 header, article {
     width: 900px;
@@ -59,7 +59,7 @@ header, article {
 }
 
 header h1 {
-    font-family: 'Oswald', sans-serif;
+    font-family: sans-serif;
     font-size: 4em;
     line-height: 1em;
     color: #2c0009;
@@ -81,6 +81,8 @@ header h2 {
     font-weight: 300;
     color: #63000c;
 }
+
+/* * * * * ASIDE * * * * */
 
 div#aside {
     width: 100%;
@@ -181,7 +183,21 @@ li.searchmenu {
     padding: 0 6px;
 }
 
-/* * * * * Error * * * * */
+/* * * * * ARTICLES - Algemeen * * * * */
+
+article h3 {
+    border-bottom: 1px solid #4c0009;
+    margin-left: 0;
+}
+
+/* * * * * ARTICLE - Interact * * * * */
+
+article#interact div p {
+    margin: 0;
+    padding: 0;
+}
+
+/* * * Error * * */
 
 div#error {
     background-color: #fee;
@@ -193,12 +209,7 @@ div#error {
     margin: 5px 0;
 }
 
-div#error p, div#info p, div#interactie p {
-    margin: 0;
-    padding: 0;
-}
-
-/* * * * * Info * * * * */
+/* * * Info * * */
 
 div#info {
     background-color: #efe;
@@ -210,7 +221,7 @@ div#info {
     margin: 5px 0;
 }
 
-/* * * * * Interactie * * * * */
+/* * * Interactie * * */
 
 div#interactie {
     background-color: #eff;
@@ -222,7 +233,15 @@ div#interactie {
     margin: 5px 0;
 }
 
-/* * * * * Pizzalijst * * * * */
+/* * * * * ARTICLE - mandje * * * * */
+
+article#mandje {
+    display: none;
+}
+
+/* * * * * ARTICLE - commerce * * * * */
+
+/* * * Pizzalijst * * */
 
 .pizzalijst_pizza {
     /*outline: 1px dotted red;*/
@@ -241,6 +260,32 @@ div#interactie {
 .knop_inmandje {
     float: right;
 }
+
+/* * * * * ARTICLE - user * * * * */
+
+article#user {
+    display: none;
+}
+
+
+/* * * * * FORM Validate * * * * */
+
+input.error {
+    outline: red 1px dotted;
+}
+
+label.error {
+    background-color: #c44;
+    color: white;
+    padding: 2px 10px;
+}
+
+p.form_info {
+    font-size: 0.75em;
+    margin: 0;
+    padding: 5px 0;
+}
+
 /* * * * * OVERIGE * * * * */
 
 .floatleft {

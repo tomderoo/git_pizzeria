@@ -13,14 +13,14 @@ return jQuery.post(url,data,callback,"json");
 /* * * * * GLOBALS / VARS * * * * */
 
 var klant = {
-    "id": "",
+    "id": null,
     "anaam": "",
     "vnaam": "",
     "email": ""
 };
 
 var mandje = {
-    "klant_id": 1,              // klant_id
+    "klant_id": klant.id,              // klant_id
     "bestelling": [],            // array van bestellijnen
     "besteldatum": new Date().toISOString().slice(0, 19).replace('T', ' '),
     "leverdatum": new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -42,24 +42,41 @@ $(function(){
     var $eLinkMandjeLedig = $('#ledig_mandje');
     var $eLinkUitloggen = $('#klant_actie_uit a');
     var $eLinkAanmelden = $('#klant_actie_in a');
+    var $eSpace_Commerce = $('article#commerce');
+    var $eSpace_Interact = $('article#interact');
+    var $eSpace_Mandje = $('article#mandje');
+    var $eSpace_User = $('article#user');
     
     //localStorage.clear();
+    //sessionStorage.clear();
+    //
+    // check klant
+    if (!sessionStorage.klant) {
+        console.log("Klant bestaat niet => lege klant");
+    } else {
+        console.log("Klant bestaat al => opvullen");
+        var retrievedklant = sessionStorage.klant;
+        klant = JSON.parse(retrievedklant);
+        console.log(klant);
+    }
+    visueelKlant();
+    herkenEmail();
+    
     // mandje sessie
     if(!localStorage.mandje) {
         console.log("localMandje bestaat niet => maken");
         localStorage.mandje = JSON.stringify(mandje);
     } else {
         console.log("localMandje bestaat wel => inladen");
-        retrievedmandje = localStorage.mandje;
+        var retrievedmandje = localStorage.mandje;
         mandje = JSON.parse(retrievedmandje);
     };
     
+    // verbind klant met mandje
+    setMandje(klant.id);
+    
     // update het mandje
     visueelMandje();
-    
-    // check klant
-    // - IF klant anoniem
-    visueelKlant();
     
     // invisible info / error / interactie
     $('#error').hide();
@@ -68,6 +85,74 @@ $(function(){
     
     /* * * PIZZALIJST * * */
     vindPizzasPromo();
+    $eSpace_Commerce.soloFocus();
+    
+    /* * * USER FORMS * * */
+    $('#form_aanmelden').validate({
+        rules: {
+            Uz44r: {
+                required: true,
+                email: true
+            },
+            P455w0r6: {
+                required: true,
+                minlength: 8
+            }
+        },
+        messages: {
+            Uz44r: "Vul een geldig emailadres in",
+            P455w0r6: "Vul een paswoord in (min. 8 karakters)"
+        },
+        submitHandler: function(form){
+            console.log("Form-aanmelden: gedrukt op submit");
+            var formdata = $('#form_aanmelden').serializeArray();
+            herkenEmail(formdata[1].value); // email tonen
+            loginKlant(formdata[1].value, formdata[2].value);
+            // form.preventDefault();
+            // form.submit();
+        }
+    });
+    
+    $('#form_registreren').validate({
+        rules: {
+            Uz44r: {
+                required: true,
+                email: true
+            },
+            P455w0r6: {
+                required: true,
+                minlength: 8
+            },
+            vnaam: "required",
+            anaam: "required",
+            telefoon: {
+                required: true,
+                digits: true,
+                minlength: 7
+            },
+            straat: "required",
+            huisnr: "required",
+            gemeente: "required",
+            postcode: "required"
+        },
+        messages: {
+            Uz44r: "Vul een geldig emailadres in",
+            P455w0r6: "Vul een paswoord in (min. 8 karakters)",
+            vnaam: "Verplicht veld",
+            anaam: "Verplicht veld",
+            telefoon: "Verplicht; minimaal 7 karakters, enkel cijfers",
+            straat: "Verplicht veld",
+            huisnr: "Verplicht veld",
+            gemeente: "Verplicht veld",
+            postcode: "Verplicht veld"
+        },
+        submitHandler: function(form) {
+            console.log("Form-registreren: gedrukt op submit");
+            var formdata = $('#form_registreren').serializeArray();
+            console.log(formdata);
+            registreerKlant(formdata);
+        }
+    });
     
     /* * * EVENT HANDLERS * * */
         
@@ -75,6 +160,7 @@ $(function(){
         $eLinkSuggesties.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op LINK suggesties");
+            $eSpace_Commerce.soloFocus();
             clearPizzalijst();
             vindPizzasPromo();
         });
@@ -83,6 +169,7 @@ $(function(){
         $eLinkAanbod.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op LINK aanbod");
+            $eSpace_Commerce.soloFocus();
             clearPizzalijst();
             vindPizzasAll();
         });
@@ -91,7 +178,9 @@ $(function(){
         $eLinkMandjeBekijk.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op bekijk mandje");
-            bevestigMandje();
+            $eSpace_Mandje.maakTempScherm();
+            $eSpace_Mandje.soloFocus();
+            //bevestigMandje();
         });
         
         // - Ledig mandje
@@ -100,17 +189,19 @@ $(function(){
             console.log("Geklikt op ledig mandje");
             ledigMandje();
         });
-        /*
+        
         // - Aanmelden / registreren
         $eLinkAanmelden.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op aanmelden/registreren");
+            $eSpace_User.soloFocus();
         });
-        */
+        
         // - Uitloggen
         $eLinkUitloggen.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op uitloggen");
+            loguitKlant();
         });
     
 }); // einde doc ready
@@ -121,21 +212,65 @@ $(window).load(function(){
 
 /* * * * * FUNCTIES * * * * */
 
+// - tempscherm
+
+$.fn.maakTempScherm = function(){
+    var eThis = this;
+    eThis
+            //.attr("title", "Klik om te sluiten")
+            //.soloFocus()
+            .show()
+            .on("click", function(){
+                $('#commerce').soloFocus();
+            });
+};
+
+// - solofocus
+$.fn.soloFocus = function(){
+    $('body article').hide(400);
+    this.show(400);
+};
+
 // - login klantgegevens
 function loginKlant(email, paswoord) {
     // JSON query om klant in te loggen
-        var json_url = "jsonserver.php";
-        var json_query = { show: "klant", email: email, paswoord: paswoord };
-        $.post(
-                json_url,
-                json_query,
-                function(json_data){
-                    var dezeKlant = json_data;
-                    for (var i = 0; i < json_data.length; i++) {
-                        console.log(json_data[i]); // debug: tonen eerste item in array
-                        toonPizza(json_data[i]);
-                    }
-                }, 'json');
+    var json_url = "jsonserver.php";
+    var json_query = { act: "login_klant", email: email, paswoord: paswoord };
+    $.post(json_url, json_query)
+        .done(function(result){
+            var foundklant = JSON.parse(result);
+            setKlant(foundklant.id, foundklant.anaam, foundklant.vnaam, foundklant.email);
+            visueelKlant();
+            $('#interactie')
+                    .html("Welkom, " + klant.vnaam + " " + klant.anaam + ", u bent succesvol ingelogd onder uw emailadres " + klant.email)
+                    .maakTempScherm();
+            $('#interact').soloFocus();
+        })
+        .fail(function(result){
+            console.log(result.statusText);
+        });
+}
+
+// - uitloggen
+function loguitKlant() {
+    sessionStorage.removeItem('klant');
+    klant.id = null;
+    klant.anaam = "";
+    klant.vnaam = "";
+    klant.email = "";
+    visueelKlant();
+}
+
+// - registreer klant
+function registreerKlant(formdata) {
+    var str_klantdata = JSON.stringify(formdata);
+    $.post("jsonserver.php", {act: "registreer_klant", klantdata: str_klantdata })
+            .done(function(result){
+                console.log(result);
+            })
+            .fail(function(result){
+                console.log(result.statusText);
+            });
 }
 
 // - zet de Klant-var
@@ -144,20 +279,26 @@ function setKlant(id, anaam, vnaam, email) {
     klant.anaam = anaam;
     klant.vnaam = vnaam;
     klant.email = email;
-    setMandje(klant);
+    sessionStorage.klant = JSON.stringify(klant);
+    setMandje(klant.id);
 };
 
 // - integreer de Klant in het Mandje
-function setMandje(klant) {
-    localStorage.mandje.klant = klant;
+function setMandje(klantid) {
+    localStorage.mandje.klant_id = parseInt(klantid);
+    mandje.klant_id = parseInt(klantid);
 };
 
 // - visuele update klantinfo
 function visueelKlant() {
-    if (klant.id == "") {
+    if (klant.id === null) {
         $('#klant_actie_uit a').hide();
+        $('#klant_actie_in a').show();
+        $('#klant_identiteit').html("");
     } else {
         $('#klant_actie_in a').hide();
+        $('#klant_actie_uit a').show();
+        $('#klant_identiteit').html(klant.vnaam + " " + klant.anaam + " -");
     }
 }
 
@@ -198,21 +339,10 @@ function ledigMandje() {
 
 // - bevestig mandje
 function bevestigMandje() {
-    // JSON query om klant in te loggen
-    /*var json_url = "jsonserver.php";
-    var json_mandje = mandje;
-    var json_query = { show: "bestel", mandje: json_mandje };
-    console.log(json_query);
-    $.postJSON(json_url, json_query)
-            .done(function(result){
-                console.log(result);
-            })
-            .fail(function(result){
-                console.log(result.statusText);
-            });*/
+    // JSON query om mandje te bestellen
     console.log(mandje);
     var str_mandje = JSON.stringify(mandje);
-    $.post("jsonserver.php", {show: "bestel", mandje: str_mandje })
+    $.post("jsonserver.php", {act: "bestel_mandje", mandje: str_mandje })
             .done(function(result){
                 console.log(result);
             })
@@ -248,13 +378,13 @@ function visueelMandje() {
 function vindPizzasAll() {
     if (pizzalijstAll != null) {
         for (var i = 0; i < pizzalijstAll.length; i++) {
-            console.log("Teruggave gevulde array: " + pizzalijstAll[i]); // debug: tonen eerste item in array
+            //console.log("Teruggave gevulde array: " + pizzalijstAll[i]); // debug: tonen eerste item in array
             toonPizza(pizzalijstAll[i]);
         }
     } else {
         // JSON query om pizzalijstAll te vullen
         var json_url = "jsonserver.php";
-        var json_query = { show: "all" };
+        var json_query = { act: "show_all" };
         $.post(
                 json_url,
                 json_query,
@@ -272,13 +402,13 @@ function vindPizzasAll() {
 function vindPizzasPromo() {
     if (pizzalijstPromo != null) {
         for (var i = 0; i < pizzalijstPromo.length; i++) {
-            console.log("Teruggave gevulde array: " + pizzalijstPromo[i]); // debug: tonen eerste item in array
+            //console.log("Teruggave gevulde array: " + pizzalijstPromo[i]); // debug: tonen eerste item in array
             toonPizza(pizzalijstPromo[i]);
         }
     } else {
         // JSON query om pizzalijstAll te vullen
         var json_url = "jsonserver.php";
-        var json_query = { show: "promo" };
+        var json_query = { act: "show_promo" };
         $.post(
                 json_url,
                 json_query,
@@ -331,3 +461,15 @@ function toonPizza(pizzaobject) {
             
             .appendTo(dezePizza).button();
 };
+
+function herkenEmail(email) {
+    if (email) {
+        localStorage.klant_email = email;
+    };
+    if(!localStorage.klant_email || localStorage.klant_email == null) {
+        console.log("localEmail bestaat niet");
+    } else {
+        var retrievedemail = localStorage.klant_email;
+        $('#form_aanmelden input[name="Uz44r"]').val(retrievedemail);
+    };
+}

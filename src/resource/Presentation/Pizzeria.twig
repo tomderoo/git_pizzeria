@@ -8,6 +8,7 @@
         <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
+        <script type="text/javascript" src="js/validate/dist/jquery.validate.min.js"></script>
         <script type="text/javascript" src="js/pizzeria.js"></script>
     </head>
 
@@ -18,7 +19,7 @@
             
             <header>
                 <div id="banner">
-                    <h1><a href="index.php">AuthenticPizza</a></h1>
+                    <h1><a href="/pizzeria">AuthenticPizza</a></h1>
                     <h2>De smaak van toen</h2>
                 </div>
                 <div id="aside">
@@ -26,7 +27,7 @@
                         <img src="img/user20x.png" alt="User">
                         <div id="klant_identiteit"></div>
                         <div id="klant_actie_in">
-                            <a href="login.php">Aanmelden of registreren</a>
+                            <a href="#">Aanmelden of registreren</a>
                         </div>
                         <div id="klant_actie_uit">
                             <a href="#">Uitloggen</a>
@@ -51,18 +52,62 @@
                 </div>
             </header>
             
-            <article>
+            <article id="interact">
                 <div id="error">Uw browser beschikt niet over Javascript of u hebt Javascript uitgeschakeld.<br>Update uw browser of schakel Javascript in om van deze site gebruik te maken.</div>
                 
                 <div id="info"></div>
                 
-                <div id="interactie">Test</div>
-                
+                <div id="interactie">test</div>
+            </article>
+            
+            <article id="mandje">
+                <h3>Uw bestelmandje</h3>
+                <div id="mandje_overzicht"></div>
+                <form id="form_mandjebestellen" action="jsonserver.php" method="post">
+                    <input type="hidden" name="act" value="bestel_mandje">
+                    <label for"leverdatum"><input type="date" name="leverdatum"> Leverdatum</label><br>
+                    <textarea rows="5" cols="50" maxlength="500" name="opmerkingen" placeholder="Opmerkingen (max. 500 lettertekens)"></textarea><br>
+                    <input type="submit" value="Bevestig bestelling">
+                    <button id="sluitscherm" type="button">Sluit dit scherm</button>
+                    <p class="form_info">Door op "bevestig bestelling" te drukken neemt u de verplichting op zich om het bestelde daadwerkelijk aan te vragen voor vermelde leverdatum en het op dat moment ook te betalen. Bij niet-ontvangst en/of niet-betaling van de bestelling kan uw profielscore negatief beïnvloed worden, en kan u in de toekomst uitgesloten worden van onze dienstverlening.</p>
+                </form>
+            </article>
+            
+            <article id="commerce">
                 <h3 id="pizzalijst_titel">Onze pizza's</h3>
                 
-                <div id="pizzalijst_container">
-                    
-                </div>
+                <div id="pizzalijst_container"></div>
+            </article>
+            
+            <article id="user">
+                <h3>Aanmelden</h3>
+                <form id="form_aanmelden" action="jsonserver.php" method="post">
+                    <input type="hidden" name="act" value="login_klant">
+                    <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
+                    <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
+                    <input type="submit" value="Aanmelden">
+                </form>
+                
+                <h3>Registreren</h3>
+                <form id="form_registreren" action="jsonserver.php" method="post">
+                    Login-gegevens:<br>
+                    <!--<input type="hidden" name="act" value="registreer_klant">-->
+                    <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
+                    <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
+                    <hr>
+                    Persoonsgegevens:<br>
+                    <input type="text" size="40" name="vnaam" placeholder="Voornaam" required><br>
+                    <input type="text" size="40" name="anaam" placeholder="Achternaam" required><br>
+                    <input type="text" size="40" name="telefoon" placeholder="Telefoon / GSM" required><br>
+                    Adresgegevens (*):<br>
+                    <input type="text" size="40" name="straat" placeholder="Straat" required>
+                    <input type="text" size="10" name="huisnr" placeholder="Huisnr." required>
+                    <input type="text" size="5" name=busnr" placeholder="Busnr."><br>
+                    <input type="text" size="40" name="gemeente" placeholder="Gemeente" required>
+                    <input type="text" size="10" name="postcode" placeholder="Postcode" required><br>
+                    <p class="form_info">*: Uw pizza's worden bij bestelling op dit adres geleverd. Het is niet mogelijk om op een ander adres te laten leveren; u dient daarvoor een andere account op naam van de adreshouder te hebben.</p>
+                    <input type="submit" value="Registreren">
+                </form>
                 
             </article>
             

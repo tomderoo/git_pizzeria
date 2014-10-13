@@ -4,16 +4,16 @@ namespace resource\Entities;
 
 class Klant {
     
-    private $id;
-    private $anaam;
-    private $vnaam;
+    public $id;
+    public $anaam;
+    public $vnaam;
     private $straat;
     private $huisnr;
     private $busnr;
     private $postcode;
     private $gemeente;
     private $telefoon;
-    private $email;
+    public $email;
     private $paswoord;
     private $status;
     private $info;
