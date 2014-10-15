@@ -47,8 +47,8 @@ $(function(){
     var $eSpace_Mandje = $('article#mandje');
     var $eSpace_User = $('article#user');
     
-    //localStorage.clear();
-    //sessionStorage.clear();
+    //localStorage.clear();     // Debug functie: resetten van localStorage
+    //sessionStorage.clear();   // Debug functie: resetten van sessionStorage
     //
     // check klant
     if (!sessionStorage.klant) {
@@ -85,7 +85,7 @@ $(function(){
     
     /* * * PIZZALIJST * * */
     vindPizzasPromo();
-    $eSpace_Commerce.soloFocus();
+    //$eSpace_Commerce.soloFocus();
     
     /* * * USER FORMS * * */
     $('#form_aanmelden').validate({
@@ -108,6 +108,8 @@ $(function(){
             var formdata = $('#form_aanmelden').serializeArray();
             herkenEmail(formdata[1].value); // email tonen
             loginKlant(formdata[1].value, formdata[2].value);
+            console.log("Nu de eerste checkBestel na func loginKlant()");
+            checkBestelSubmitMogelijk();
             // form.preventDefault();
             // form.submit();
         }
@@ -154,33 +156,75 @@ $(function(){
         }
     });
     
+    // - mandje bestellen
+    $('#input_leverdatum').datepicker({
+        dateFormat: "yy-mm-dd",
+        maxDate: "+2w",
+        minDate: "+0d"
+    });
+    
+    $('#input_levertijd').timepicker();
+    
+    checkBestelSubmitMogelijk();
+    
+    $('#formbestellen_aanmelden').on("click", function(e){
+        e.preventDefault();
+        $eSpace_User.soloFocus();
+    });
+    
+    $('form#form_mandjebestellen').validate({
+        rules: {
+            leverdatum: {
+                required: true
+            },
+            levertijd: {
+                required: true
+            },
+            opmerkingen: {
+                required: false
+            }
+        },
+        messages: {
+            leverdatum: "Vul een geldige datum in (max. 14 dagen van nu)",
+            levertijd: "Vul de gewenste levertijd in (onder voorbehoud van drukte)"
+        },
+        submitHandler: function(form) {
+            console.log("Form-bestellen: gedrukt op submit");
+            var formdata = $('#form_mandjebestellen').serializeArray();
+            console.log(formdata);
+            mandje.besteldatum = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            var sLevertijd = formdata[1].value + ' ' + formdata[2].value + ':00';
+            mandje.leverdatum = sLevertijd;
+            mandje.klant_opmerking = formdata[3].value;
+            console.log(mandje);
+            bevestigMandje();
+        }
+    });
+    
     /* * * EVENT HANDLERS * * */
         
         // - LINK Suggesties
         $eLinkSuggesties.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op LINK suggesties");
-            $eSpace_Commerce.soloFocus();
-            clearPizzalijst();
             vindPizzasPromo();
+            $eSpace_Commerce.soloFocus();
         });
         
         // - LINK Volledig aanbod
         $eLinkAanbod.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op LINK aanbod");
-            $eSpace_Commerce.soloFocus();
-            clearPizzalijst();
             vindPizzasAll();
+            $eSpace_Commerce.soloFocus();
         });
         
         // - Bekijk mandje
         $eLinkMandjeBekijk.on("click", function(e){
             e.preventDefault();
             console.log("Geklikt op bekijk mandje");
-            $eSpace_Mandje.maakTempScherm();
             $eSpace_Mandje.soloFocus();
-            //bevestigMandje();
+            console.log(mandje);
         });
         
         // - Ledig mandje
@@ -188,6 +232,7 @@ $(function(){
             e.preventDefault();
             console.log("Geklikt op ledig mandje");
             ledigMandje();
+            $eSpace_Commerce.soloFocus();
         });
         
         // - Aanmelden / registreren
@@ -202,6 +247,8 @@ $(function(){
             e.preventDefault();
             console.log("Geklikt op uitloggen");
             loguitKlant();
+            console.log("CheckBestel na loguitKlant aanklikken");
+            checkBestelSubmitMogelijk();
         });
     
 }); // einde doc ready
@@ -212,14 +259,13 @@ $(window).load(function(){
 
 /* * * * * FUNCTIES * * * * */
 
-// - tempscherm
+// - tempscherm // DIT WERKT NIET NAAR BEHOREN - WAAROM? (Vertoont dubbel laden, geeft niet alle attr door, etc.)
 
 $.fn.maakTempScherm = function(){
     var eThis = this;
     eThis
-            //.attr("title", "Klik om te sluiten")
-            //.soloFocus()
-            .show()
+            .attr("title", "Klik om te sluiten")
+            .soloFocus()
             .on("click", function(){
                 $('#commerce').soloFocus();
             });
@@ -227,7 +273,7 @@ $.fn.maakTempScherm = function(){
 
 // - solofocus
 $.fn.soloFocus = function(){
-    $('body article').hide(400);
+    $('body article').not(this).hide(400); // not() om het huidige element uit te sluiten en zodoende een overbodige slide te vermijden
     this.show(400);
 };
 
@@ -240,10 +286,16 @@ function loginKlant(email, paswoord) {
         .done(function(result){
             var foundklant = JSON.parse(result);
             setKlant(foundklant.id, foundklant.anaam, foundklant.vnaam, foundklant.email);
+            setMandje(parseInt(foundklant.id));
             visueelKlant();
+            checkBestelSubmitMogelijk();
             $('#interactie')
                     .html("Welkom, " + klant.vnaam + " " + klant.anaam + ", u bent succesvol ingelogd onder uw emailadres " + klant.email)
-                    .maakTempScherm();
+                    .attr("title", "Klik om te sluiten")
+                    .show()
+                    .on("click", function(){
+                        $('#commerce').soloFocus();
+                    });
             $('#interact').soloFocus();
         })
         .fail(function(result){
@@ -258,7 +310,9 @@ function loguitKlant() {
     klant.anaam = "";
     klant.vnaam = "";
     klant.email = "";
+    setKlant(klant.id);
     visueelKlant();
+    checkBestelSubmitMogelijk();
 }
 
 // - registreer klant
@@ -313,6 +367,7 @@ function bestellijnInMandje(pizzaobject, aantal) {
     };
     var bestellijn = {
         "product_id" : pizzaobject.id,
+        "naam" : pizzaobject.naam,
         "aantal" : parseInt(aantal),
         "prijs" : parseInt(nu_prijs)
     };
@@ -334,7 +389,20 @@ function bestellijnInMandje(pizzaobject, aantal) {
 // - ledig mandje
 function ledigMandje() {
     mandje.bestelling = [];
+    //$('#commerce').soloFocus();
     visueelMandje();
+}
+
+// - check bestel mogelijk 
+function checkBestelSubmitMogelijk() {
+    //console.log("checkBestel, klant id = " + mandje.klant_id);
+    if (isNaN(mandje.klant_id) || null == mandje.klant_id) {
+        $('#formbestellen_submit').hide();
+        $('#formbestellen_aanmelden').show();
+    } else {
+        $('#formbestellen_aanmelden').hide();
+        $('#formbestellen_submit').show();
+    }
 }
 
 // - bevestig mandje
@@ -345,10 +413,29 @@ function bevestigMandje() {
     $.post("jsonserver.php", {act: "bestel_mandje", mandje: str_mandje })
             .done(function(result){
                 console.log(result);
+                $('#interactie')
+                        .html("<p>Uw bestelling werd succesvol ingevoerd, en zal op de voorziene datum geleverd worden!</p>")
+                        .css({ cursor: "pointer"})
+                        .show()
+                        .on("click", function(e){
+                            e.preventDefault();
+                            $('#commerce').soloFocus();
+                        });
+                $('#interact').soloFocus();
+                ledigMandje();
+                visueelMandje();
             })
             .fail(function(result){
                 console.log(result.statusText);
-            });;
+                $('#error')
+                    .html("Er is iets misgegaan tijdens het doorsturen van uw bestelling, probeer opnieuw...")
+                    .attr("title", "Klik om te sluiten")
+                    .show()
+                    .on("click", function(){
+                        $('#mandje').soloFocus();
+                    });
+                $('#interact').soloFocus();
+            });
 }
 
 // - visuele update van mandje
@@ -372,10 +459,24 @@ function visueelMandje() {
         $('#mandje_acties').show();
     }
     localStorage.mandje = JSON.stringify(mandje);
+    // update het mandje-veld
+    var eMandjelijst = $('<ul>');
+    for (var n = 0; n < mandje.bestelling.length; n++) {
+        $('<li>')
+                .html(mandje.bestelling[n].aantal + ' x ' + mandje.bestelling[n].naam + ' - &euro; ' + parseFloat(parseInt(mandje.bestelling[n].aantal) * parseInt(mandje.bestelling[n].prijs) / 100).toFixed(2))
+                .appendTo(eMandjelijst);
+    }
+    $('div#mandje_overzicht').html(eMandjelijst);
 }
+
+// - clear pizzalijst
+function clearPizzalijst() {
+    $('#pizzalijst_container').html("");
+};
 
 // - retrieve pizza's: ALL
 function vindPizzasAll() {
+    clearPizzalijst();
     if (pizzalijstAll != null) {
         for (var i = 0; i < pizzalijstAll.length; i++) {
             //console.log("Teruggave gevulde array: " + pizzalijstAll[i]); // debug: tonen eerste item in array
@@ -400,6 +501,7 @@ function vindPizzasAll() {
 
 // - retrieve pizza's: PROMO
 function vindPizzasPromo() {
+    clearPizzalijst();
     if (pizzalijstPromo != null) {
         for (var i = 0; i < pizzalijstPromo.length; i++) {
             //console.log("Teruggave gevulde array: " + pizzalijstPromo[i]); // debug: tonen eerste item in array
@@ -420,11 +522,6 @@ function vindPizzasPromo() {
                     }
                 }, 'json');
     }
-};
-
-// - clear pizzalijst
-function clearPizzalijst() {
-    $('#pizzalijst_container').html("");
 };
 
 // - toon pizza's

@@ -9,6 +9,8 @@
         <script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
         <script type="text/javascript" src="js/validate/dist/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-timepicker-addon.css">
         <script type="text/javascript" src="js/pizzeria.js"></script>
     </head>
 
@@ -65,10 +67,11 @@
                 <div id="mandje_overzicht"></div>
                 <form id="form_mandjebestellen" action="jsonserver.php" method="post">
                     <input type="hidden" name="act" value="bestel_mandje">
-                    <label for"leverdatum"><input type="date" name="leverdatum"> Leverdatum</label><br>
+                    <label for="leverdatum"><input id="input_leverdatum" type="text" name="leverdatum"> Leverdatum</label><br>
+                    <label for="levertijd"><input id="input_levertijd" type="text" name="levertijd"> Levertijdstip</label><br>
                     <textarea rows="5" cols="50" maxlength="500" name="opmerkingen" placeholder="Opmerkingen (max. 500 lettertekens)"></textarea><br>
-                    <input type="submit" value="Bevestig bestelling">
-                    <button id="sluitscherm" type="button">Sluit dit scherm</button>
+                    <input id="formbestellen_submit" type="submit" value="Bevestig bestelling">
+                    <button id="formbestellen_aanmelden" type="button">Aanmelden om te bestellen</button>
                     <p class="form_info">Door op "bevestig bestelling" te drukken neemt u de verplichting op zich om het bestelde daadwerkelijk aan te vragen voor vermelde leverdatum en het op dat moment ook te betalen. Bij niet-ontvangst en/of niet-betaling van de bestelling kan uw profielscore negatief beïnvloed worden, en kan u in de toekomst uitgesloten worden van onze dienstverlening.</p>
                 </form>
             </article>

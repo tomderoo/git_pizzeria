@@ -177,7 +177,7 @@ class PizzaService {
         // maak een bestelling
         $besteldatum = date("Y-m-d H:i:s");
         $leverdatum = $mandje->leverdatum;
-        $opmerking = ""; //$mandje->klant_opmerking;
+        $opmerking = $mandje->klant_opmerking;
         $bestellingDAO = new BestellingDAO();
         $bestellingId = $bestellingDAO->maakNieuweBestelling($klant_id, $besteldatum, $leverdatum, "", "", 0, $opmerking);
         // maak de aparte bestellijnen
