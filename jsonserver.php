@@ -39,10 +39,10 @@ switch ($_POST["act"]) {
         try {
             $klant = $service->loginKlant($email, $paswoord);
         } catch (resource\Exception\KlantNietGevondenException $ex) {
-            echo json_encode("Gebruiker niet gevonden");
+            echo json_encode("NOUSER");
             break;
         } catch (resource\Exception\FoutPaswoordException $ex) {
-            echo json_encode("Fout paswoord");
+            echo json_encode("NOPASS");
             break;
         }
         echo(json_encode($klant));

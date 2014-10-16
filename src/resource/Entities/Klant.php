@@ -7,16 +7,16 @@ class Klant {
     public $id;
     public $anaam;
     public $vnaam;
-    private $straat;
-    private $huisnr;
-    private $busnr;
-    private $postcode;
-    private $gemeente;
-    private $telefoon;
+    public $straat;
+    public $huisnr;
+    public $busnr;
+    public $postcode;
+    public $gemeente;
+    public $telefoon;
     public $email;
     private $paswoord;
-    private $status;
-    private $info;
+    public $status;
+    public $info;
     
     private function __construct($id, $anaam, $vnaam, $straat, $huisnr, $busnr, $postcode, $gemeente, $telefoon, $email, $paswoord, $status, $info) {
         $this->id = $id;

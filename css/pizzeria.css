@@ -8,7 +8,7 @@
 /* * * * * ALGEMEEN * * * * */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Source Sans Pro', Arial, sans-serif;
     margin: 0;
     padding: 0;
     font-size: 16px;
@@ -59,7 +59,7 @@ header, article {
 }
 
 header h1 {
-    font-family: sans-serif;
+    font-family: 'Pacifico', sans-serif;
     font-size: 4em;
     line-height: 1em;
     color: #2c0009;
@@ -74,11 +74,11 @@ header h1 a:link, header h1 a:active, header h1 a:hover, header h1 a:visited {
 }
 
 header h2 {
-    font-family: 'Oswald', sans-serif;
-    margin-top: -5px;
+    font-family: 'Indie Flower', sans-serif;
+    margin-top: -1px;
     margin-bottom: 10px;
     padding: 0 20px 0px;
-    font-weight: 300;
+    font-weight: normal;
     color: #63000c;
 }
 
@@ -88,14 +88,34 @@ div#aside {
     width: 100%;
     text-align: right;
     overflow: auto;
-    background-color: #fcf4f4;
-    
+    background-color: #fdc;
+    border-radius: 20px;
+}
+
+div#quickmenu {
+    float: left;
+    line-height: 30px;
+    padding-top: 3px;
+    margin: 5px;
+}
+
+div#quickmenu a {
+    background-color: #c41;
+    padding: 9px 15px;
+    margin-right: 7px;
+    border-radius: 20px;
+    color: #ccc;
+    line-height: 30px;
+}
+
+div#quickmenu a:hover, div#quickmenu a:active {
+    background-color: #941;
 }
 
 div#klant, div#mandje {
     box-sizing: border-box;
     vertical-align: top;
-    line-height: 20px;
+    line-height: 30px;
     float: right;
     background-color: #78000E;
     color: white;
@@ -108,6 +128,11 @@ div#klant div, div#mandje div {
     display: inline-block;
 }
 
+div#klant img, div#mandje img {
+    position: relative;
+    top: 3px;
+}
+
 div#aside a {
     text-decoration: none;
     vertical-align: top;
@@ -118,76 +143,12 @@ div#aside a:hover, div#aside a:active {
     text-decoration: underline;
 }
 
-/* * * * * Dropdown quickmenu * * * * */
-
-div#quickmenu {
-
-}
-
-ul#menu, ul#menu ul.sub-menu {
-    padding:0;
-    margin: 0;
-}
-
-ul#menu li, ul#menu ul.sub-menu li {
-    list-style-type: none;
-    display: inline-block;
-}
-
-ul#menu li a {
-    min-width: 100px;
-    text-align: center;
-    
-}
-
-ul#menu li a, ul#menu li ul.sub-menu li a {
-    text-decoration: none;
-    color: #fff;
-    background-color: #4c0009;
-    padding: 5px;
-    display: inline-block;
-}
-
-ul#menu li {
-    position: relative;
-}
-
-ul#menu li ul.sub-menu {
-    display:none;
-    position: absolute;
-    top: 30px;
-    left: 0;
-    width: 200px;
-    border-top: 1px solid #fff;
-}
-
-ul#menu li ul.sub-menu li a {
-    display: block;
-    min-width: 100px;
-    text-align: left;
-}
-
-ul#menu li:hover ul.sub-menu {
-    display:block;
-}
-
-ul#menu li ul.sub-menu li a:hover {
-    background-color: #a86c6c;
-}
-
-li.searchmenu {
-    background-color: #4c0009;
-    line-height: 30px;
-    width: 333px;
-    box-sizing: border-box;
-    padding: 0 6px;
-}
-
 /* * * * * ARTICLES - Algemeen * * * * */
 
 article h3 {
     border-bottom: 1px solid #4c0009;
-    margin-left: 0;
+    font-size: 1.75em;
+    margin: 3px 0 15px;
 }
 
 /* * * * * ARTICLE - Interact * * * * */
@@ -239,26 +200,168 @@ article#mandje {
     display: none;
 }
 
+div#mandje_leveradres {
+    padding: 3px;
+    border: #63000C solid 1px;
+    background-color: #f0e9e9;
+}
+
+div#mandje_overzicht {
+    box-sizing: border-box;
+    margin: 0;
+    margin-bottom: 1em;
+    padding: 0;
+}
+
+div#mandje_overzicht table {
+    margin-top: 10px;
+    border: #63000C solid 1px;
+    width: 100%;
+}
+
+div#mandje_overzicht table thead tr td {
+    border-bottom: #63000C solid 1px;
+}
+
+div#mandje_overzicht table thead tr td {
+    background-color: #f0e9e9;
+}
+
+tr.mandjelijn td {
+    padding: 2px;
+}
+
+td.mandjelijn_aantal {
+    width: 5%;
+    text-align: left;
+    padding: 2px;
+}
+
+td.mandjelijn_naam {
+    width: 65%;
+}
+
+div.mandjelijn_prijs {
+    width: 15%;
+}
+
+div.mandjelijn_acties {
+    width: 15%;
+}
+
+div.mandjelijn_acties a {
+}
+
+tr.mandje_totaal td {
+    background-color: #f0e9e9;
+    border-top: #63000C solid 1px;
+    font-weight: bold;
+}
+
 /* * * * * ARTICLE - commerce * * * * */
 
 /* * * Pizzalijst * * */
 
-.pizzalijst_pizza {
-    /*outline: 1px dotted red;*/
+div.promo_chef {
+    box-shadow: #266f26 1px 1px 10px;
+}
+div.promo_seiz {
+    box-shadow: #e61 1px 1px 10px;
+}
+div.promo_tijd {
+    box-shadow: #615 1px 1px 10px;
+}
+
+p.promo_chef, p.promo_seiz, p.promo_tijd {
+    font-family: 'Indie Flower', sans-serif;
+    font-size: 1.1em;
+    display: inline-block;
+    -ms-transform: rotate(-2deg); /* IE 9 */
+    -webkit-transform: rotate(-2deg); /* Chrome, Safari, Opera */
+    transform: rotate(-2deg);
+    color: white;
     padding: 10px;
+    border-radius: 10px;
+    font-style: italic;
+}
+
+p.promo_chef {
+    background-color: #266f26;
+    box-shadow: #266f26 1px 1px 10px;
+}
+
+p.promo_seiz {
+    background-color: #e61;
+    box-shadow: #e61 1px 1px 10px;
+}
+
+p.promo_tijd {
+    background-color: purple;
+    box-shadow: #615 1px 1px 10px;
+}
+
+.knop_inmandje {
+    /*float: right;*/
+}
+
+.pizzalijst_pizza {
+    padding-left: 210px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 200px;
     overflow: auto;
     margin-bottom: 10px;
     box-shadow: #63000C 1px 1px 10px;
     border-radius: 10px;
-    
+    box-sizing: border-box;
 }
 
-.pizzalijst_pizza img {
-    margin-right: 1em;
+.pizzalijst_pizza h4 {
+    margin: 0;
+    font-size: 1.25em;
 }
 
-.knop_inmandje {
-    float: right;
+.pizzalijst_pizza p {
+    margin: 5px 0 15px;
+}
+.pizza_imgdiv {
+    float: left;
+    position: relative;
+    width: 200px;
+    right: 200px;
+    margin-left: -100%;
+    padding: 0;
+}
+
+.pizza_tekstdiv {
+    float: left;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.pizza_prijsdiv {
+    float: left;
+    width: 200px;
+    margin-right: -200px;
+    text-align: center;
+}
+
+p.pizza_nuprijs {
+    margin: 0;
+    padding: 4px;
+    text-align: center;
+    font-size: 3.25em;
+    font-weight: bold;
+}
+
+p.pizza_oudprijs {
+    margin: 0;
+    padding: 4px;
+    font-size: 1.5em;
+    font-weight: normal;
+    text-decoration: line-through;
+    color: red;
 }
 
 /* * * * * ARTICLE - user * * * * */

@@ -4,11 +4,15 @@
         <meta charset=utf-8>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>AuthenticPizza - De smaak van toen</title>
+        <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Indie+Flower' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" href="css/pizzeria.css">
         <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
         <script type="text/javascript" src="js/validate/dist/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/validate/localization/jquery.ui.datepicker-nl-BE.js"></script>
         <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-timepicker-addon.css">
         <script type="text/javascript" src="js/pizzeria.js"></script>
@@ -22,9 +26,13 @@
             <header>
                 <div id="banner">
                     <h1><a href="/pizzeria">AuthenticPizza</a></h1>
-                    <h2>De smaak van toen</h2>
+                    <h2>De smaak van toen...</h2>
                 </div>
                 <div id="aside">
+                    <div id="quickmenu">
+                        <a id="link_suggesties" href="#">Suggesties</a>
+                        <a id="link_aanbod" href="#">Volledig aanbod</a>
+                    </div>
                     <div id="klant">
                         <img src="img/user20x.png" alt="User">
                         <div id="klant_identiteit"></div>
@@ -46,12 +54,6 @@
                         </div>
                     </div>
                 </div>
-                <div id="quickmenu" class="clear">
-                    <ul id="menu">
-                        <li><a id="link_suggesties" href="#">Suggesties</a></li>
-                        <li><a id="link_aanbod" href="#">Volledig aanbod</a></li>
-                    </ul>
-                </div>
             </header>
             
             <article id="interact">
@@ -64,16 +66,29 @@
             
             <article id="mandje">
                 <h3>Uw bestelmandje</h3>
-                <div id="mandje_overzicht"></div>
+                <div id="mandje_leveradres"></div>
+                <div id="mandje_overzicht">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Product</td>
+                                <td>#</td>
+                                <td>Prijs</td>
+                                <td>Acties</td>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 <form id="form_mandjebestellen" action="jsonserver.php" method="post">
                     <input type="hidden" name="act" value="bestel_mandje">
-                    <label for="leverdatum"><input id="input_leverdatum" type="text" name="leverdatum"> Leverdatum</label><br>
-                    <label for="levertijd"><input id="input_levertijd" type="text" name="levertijd"> Levertijdstip</label><br>
+                    <input id="input_leverdatum" type="text" name="leverdatum" placeholder="Leverdatum"><br>
+                    <input id="input_levertijd" type="text" name="levertijd" placeholder="Levertijdstip"><br>
                     <textarea rows="5" cols="50" maxlength="500" name="opmerkingen" placeholder="Opmerkingen (max. 500 lettertekens)"></textarea><br>
                     <input id="formbestellen_submit" type="submit" value="Bevestig bestelling">
-                    <button id="formbestellen_aanmelden" type="button">Aanmelden om te bestellen</button>
-                    <p class="form_info">Door op "bevestig bestelling" te drukken neemt u de verplichting op zich om het bestelde daadwerkelijk aan te vragen voor vermelde leverdatum en het op dat moment ook te betalen. Bij niet-ontvangst en/of niet-betaling van de bestelling kan uw profielscore negatief beïnvloed worden, en kan u in de toekomst uitgesloten worden van onze dienstverlening.</p>
                 </form>
+                <button id="formbestellen_aanmelden" type="button">Aanmelden om te bestellen</button>
+                <p class="form_info">Door op "bevestig bestelling" te drukken neemt u de verplichting op zich om het bestelde daadwerkelijk aan te vragen voor vermelde leverdatum en het op dat moment ook te betalen. Bij niet-ontvangst en/of niet-betaling van de bestelling kan uw profielscore negatief beïnvloed worden, en kan u in de toekomst uitgesloten worden van onze dienstverlening.</p>
             </article>
             
             <article id="commerce">
