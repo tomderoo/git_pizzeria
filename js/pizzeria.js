@@ -80,7 +80,7 @@ $(function(){
     
     // verbind klant met mandje
     var sLeveradres = "";
-    if (klant.adres != "" && klant.adres != undefined) {
+    if (klant.straat != "" && klant.straat != undefined) {
         sLeveradres += klant.vnaam + " " + klant.anaam + "\n";
         sLeveradres += klant.straat + " " + klant.huisnr;
         if (klant.busnr != undefined && klant.busnr != "") {
@@ -289,6 +289,9 @@ $(function(){
             bevestigMandje();
         }
     });
+    
+    // mogelijkheid tot adresverandering => toggle van invoerveld
+    // NOG UITVOEREN
     
     /* * * EVENT HANDLERS * * */
         
