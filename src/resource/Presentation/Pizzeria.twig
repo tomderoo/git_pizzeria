@@ -7,7 +7,6 @@
         <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=Indie+Flower' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" type="text/css" href="css/pizzeria.css">
         <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
@@ -16,6 +15,7 @@
         <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-timepicker-addon.css">
         <script type="text/javascript" src="js/pizzeria.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/pizzeria.css">
     </head>
 
     <body>
@@ -43,12 +43,12 @@
                             <a href="#">Uitloggen</a>
                         </div>
                     </div>
-                    <div id="mandje">
+                    <div id="mandjefuncs">
                         <img src="img/basket20x.png" alt="Mandje">
                         <div id="mandje_aantal"></div>
                         <div id="mandje_euro"></div>
                         <div id="mandje_acties">
-                            <a id="bekijk_mandje" href="#">Bekijken</a>
+                            <a id="bekijk_mandje" href="#">Bestellen</a>
                             /
                             <a id="ledig_mandje" href="#">Ledigen</a>
                         </div>
@@ -64,8 +64,27 @@
                 <div id="interactie">test</div>
             </article>
             
+            <section id="tempmandje">
+                <h3>Uw mandje</h3>
+                <div id="tempmandje_overzicht">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Product</td>
+                                <td>#</td>
+                                <td>Prijs</td>
+                                <td>Acties</td>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button id="tempmandje_bestellen" type="button">Bestellen</button>
+                    <button id="tempmandje_sluiten" type="button">Sluiten</button>
+                </div>
+            </section>
+            
             <article id="mandje">
-                <h3>Uw bestelmandje</h3>
+                <h3>Bestellen</h3>
                 <div id="mandje_leveradres"></div>
                 <div id="mandje_overzicht">
                     <table>
@@ -80,15 +99,17 @@
                         <tbody></tbody>
                     </table>
                 </div>
-                <form id="form_mandjebestellen" action="jsonserver.php" method="post">
-                    <input type="hidden" name="act" value="bestel_mandje">
-                    <input id="input_leverdatum" type="text" name="leverdatum" placeholder="Leverdatum"><br>
-                    <input id="input_levertijd" type="text" name="levertijd" placeholder="Levertijdstip"><br>
-                    <textarea rows="5" cols="50" maxlength="500" name="opmerkingen" placeholder="Opmerkingen (max. 500 lettertekens)"></textarea><br>
-                    <input id="formbestellen_submit" type="submit" value="Bevestig bestelling">
-                </form>
-                <button id="formbestellen_aanmelden" type="button">Aanmelden om te bestellen</button>
-                <p class="form_info">Door op "bevestig bestelling" te drukken neemt u de verplichting op zich om het bestelde daadwerkelijk aan te vragen voor vermelde leverdatum en het op dat moment ook te betalen. Bij niet-ontvangst en/of niet-betaling van de bestelling kan uw profielscore negatief beïnvloed worden, en kan u in de toekomst uitgesloten worden van onze dienstverlening.</p>
+                <div id="mandje_bestelfunctie">
+                    <form id="form_mandjebestellen" action="jsonserver.php" method="post">
+                        <input type="hidden" name="act" value="bestel_mandje">
+                        <input id="input_leverdatum" type="text" name="leverdatum" placeholder="Leverdatum"><br>
+                        <input id="input_levertijd" type="text" name="levertijd" placeholder="Levertijdstip"><br>
+                        <textarea rows="5" cols="50" maxlength="500" name="opmerkingen" placeholder="Opmerkingen (max. 500 lettertekens)"></textarea><br>
+                        <input id="formbestellen_submit" type="submit" value="Bevestig bestelling">
+                    </form>
+                    <button id="formbestellen_aanmelden" type="button">Aanmelden of registreren om te bestellen</button>
+                    <p class="form_info">Door uw bestelling te bevestigen neemt u de verplichting op zich om het bestelde daadwerkelijk op de gestelde leverdatum en -tijd te ontvangen en te betalen. Bij niet-ontvangst en/of niet-betaling van de bestelling kan u in de toekomst uitgesloten worden van onze dienstverlening.</p>
+                </div>
             </article>
             
             <article id="commerce">
@@ -98,20 +119,29 @@
             </article>
             
             <article id="user">
-                <h3>Aanmelden</h3>
+                <!--<ul>
+                    <li><a href="#tab_accountja">Ik heb een account</a></li>
+                    <li><a href="#tab_accountnee">Ik heb geen account</a></li>
+                </ul>-->
+                <div id="tab_accountja">
+                    <h3>Ik heb een account <span>( <a href="#">Ik heb geen account...</a> )</span></h3>
                 <form id="form_aanmelden" action="jsonserver.php" method="post">
                     <input type="hidden" name="act" value="login_klant">
                     <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
                     <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
                     <input type="submit" value="Aanmelden">
                 </form>
-                
-                <h3>Registreren</h3>
+                </div>
+                <div id="tab_accountnee">
+                <h3>Ik heb geen account <span>( <a href="#">Ik heb wel een account!</a> )</span></h3>
                 <form id="form_registreren" action="jsonserver.php" method="post">
-                    Login-gegevens:<br>
-                    <!--<input type="hidden" name="act" value="registreer_klant">-->
-                    <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
-                    <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
+                    <a href="#" id="form_toggle">Ik wil ineens een account maken</a><br>
+                    <div id="form_account_toggle">
+                        Account-gegevens:<br>
+                        <!--<input type="hidden" name="act" value="registreer_klant">-->
+                        <input type="email" size="40" name="Uz44r" placeholder="Emailadres" required><br>
+                        <input type="password" size="40" name="P455w0r6" placeholder="Paswoord" required><br>
+                    </div>
                     <hr>
                     Persoonsgegevens:<br>
                     <input type="text" size="40" name="vnaam" placeholder="Voornaam" required><br>
@@ -124,9 +154,9 @@
                     <input type="text" size="40" name="gemeente" placeholder="Gemeente" required>
                     <input type="text" size="10" name="postcode" placeholder="Postcode" required><br>
                     <p class="form_info">*: Uw pizza's worden bij bestelling op dit adres geleverd. Het is niet mogelijk om op een ander adres te laten leveren; u dient daarvoor een andere account op naam van de adreshouder te hebben.</p>
-                    <input type="submit" value="Registreren">
+                    <input id="form_registersubmit" type="submit" value="Tijdelijke adresgegevens gebruiken">
                 </form>
-                
+                </div>
             </article>
             
             {% include 'scripttimer.twig' %}

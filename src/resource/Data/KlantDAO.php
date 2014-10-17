@@ -67,7 +67,6 @@ class KlantDAO {
         $sql->bindParam(":paswoord", $paswoord);
         $sql->bindParam(":status", $status);
         $sql->bindParam(":info", $info);
-        print_r($sql);
         $sql->execute();
     }
     

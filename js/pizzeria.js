@@ -28,6 +28,7 @@ var mandje = {
     "bestelling": [],            // array van bestellijnen
     "besteldatum": new Date().toISOString().slice(0, 19).replace('T', ' '),
     "leverdatum": new Date().toISOString().slice(0, 19).replace('T', ' '),
+    "leveradres": "",
     "klant_opmerking": ""
 };
 
@@ -61,8 +62,8 @@ $(function(){
         console.log("Klant bestaat al => opvullen");
         var retrievedklant = sessionStorage.klant;
         klant = JSON.parse(retrievedklant);
-        console.log(klant);
     }
+    console.log(klant); // DEBUG
     visueelKlant();
     herkenEmail();
     
@@ -75,23 +76,67 @@ $(function(){
         var retrievedmandje = localStorage.mandje;
         mandje = JSON.parse(retrievedmandje);
     };
+    //console.log(mandje);    // DEBUG
     
     // verbind klant met mandje
-    setMandje(klant.id);
+    var sLeveradres = "";
+    if (klant.adres != "" && klant.adres != undefined) {
+        sLeveradres += klant.vnaam + " " + klant.anaam + "\n";
+        sLeveradres += klant.straat + " " + klant.huisnr;
+        if (klant.busnr != undefined && klant.busnr != "") {
+            sLeveradres += " bus " + klant.busnr;
+        }
+        sLeveradres += "\n" + klant.postcode + " " + klant.gemeente;
+    }
+    setMandje(klant.id, sLeveradres);
     
     // update het mandje
+    console.log("Update het mandje");   // DEBUG
     visueelMandje();
     
     // invisible info / error / interactie
     $('#error').hide();
     $('#info').hide();
     $('#interactie').hide();
+    $('#tempmandje').hide();
+    $('#user').hide();  //.tabs();
+    $('#user #tab_accountnee').hide();
+    /*if (mandje.bestelling.length > 0) {
+        $('#tempmandje').show(400);
+    };*/
+    
+    // zwevend mandje
+    if(mandje.bestelling.length > 0) {
+        $('#tempmandje_bestellen').show();
+    };
+    $('#tempmandje_bestellen').button().on("click", function(e){
+        e.preventDefault();
+        $('#tempmandje').toggle(400);
+        $('article#mandje').soloFocus();
+    })
+    $('#tempmandje_sluiten').button().on("click", function(e){
+        e.preventDefault();
+        $('#tempmandje').toggle(400);
+    });
     
     /* * * PIZZALIJST * * */
     vindPizzasPromo();
     //$eSpace_Commerce.soloFocus();
     
     /* * * USER FORMS * * */
+    $('#formbestellen_submit').button();
+    $('#formbestellen_aanmelden').button();
+    $('#form_aanmelden input[type=submit]').button();
+    $('#form_registersubmit').button();
+    
+    // - wel of niet account
+    $('article#user h3 span a').on("click", function(e){
+        e.preventDefault();
+        $('#tab_accountja').toggle(400);
+        $('#tab_accountnee').toggle(400);
+    });
+    
+    // - aanmelden
     $('#form_aanmelden').validate({
         rules: {
             Uz44r: {
@@ -115,6 +160,26 @@ $(function(){
             console.log("Nu de eerste checkBestel na func loginKlant()");
             checkBestelSubmitMogelijk();
         }
+    });
+    
+    // - registreren
+    
+    $('#form_account_toggle').hide();
+    
+    $('#form_toggle').on("click", function(e){
+        e.preventDefault();
+        $('#form_account_toggle').toggle(400, function(){
+            if( $(this).css("display") == "block") {
+                $('#form_registersubmit').attr("value", "Account aanmaken");
+                $('#form_toggle').html("Ik wil geen account maken, maar tijdelijke adresgegevens gebruiken");
+                console.log("Toggled naar zichtbaar");
+            }
+            if( $(this).css("display") == "none") {
+                $('#form_registersubmit').attr("value", "Tijdelijke adresgegevens gebruiken");
+                $('#form_toggle').html("Ik wil ineens een account maken");
+                console.log("Toggled naar onzichtbaar");
+            }
+        });
     });
     
     $('#form_registreren').validate({
@@ -248,6 +313,8 @@ $(function(){
             //console.log(mandje);  // DEBUG
             //console.log(klant):   // DEBUG
         });
+        // - hover mandje
+        //$eLinkMandjeBekijk.hover(function(){$('section#tempmandje').show(400)}, function(){$('section#tempmandje').hide(400)});
         
         // - Ledig mandje
         $eLinkMandjeLedig.on("click", function(e){
@@ -279,7 +346,20 @@ $(window).load(function(){
 
 // - solofocus
 $.fn.soloFocus = function(){
-    $('body article').not(this).hide(400); // not() om het huidige element uit te sluiten en zodoende een overbodige slide te vermijden
+    /*var defaults = { bVal: false };
+    
+    options = $.extend(defaults, options); // DAN MOET VAR "options" WORDEN INGESTELD IN function()
+
+    if (options.bVal === true) {
+        console.log("Het mandje wordt getoond en niet gehide");    // DEBUG
+        
+        $('body article').not(this).not($('article#tempmandje')).hide(400); // not() om het huidige element uit te sluiten en zodoende een overbodige slide te vermijden
+    } else {
+        console.log("Alles wordt gehide behalve het aangeroepene"); // DEBUG
+        $('body article').not(this).hide(400);
+    }*/
+    //console.log(this); // DEBUG
+    $('body article').not(this).hide(400);
     this.show(400);
 };
 
@@ -341,7 +421,14 @@ function loginKlant(email, paswoord) {
             console.log("Klant gevonden:");
             console.log(foundklant);
             setKlant(foundklant.id, foundklant.anaam, foundklant.vnaam, foundklant.email, foundklant.straat, foundklant.huisnr, foundklant.busnr, foundklant.postcode, foundklant.gemeente, foundklant.telefoon);
-            setMandje(parseInt(foundklant.id));
+            var sLeveradres = "";
+            sLeveradres += foundklant.vnaam + " " + foundklant.anaam + "\n";
+            sLeveradres += foundklant.straat + " " + foundklant.huisnr;
+            if (foundklant.busnr != "") {
+                sLeveradres += " bus " + foundklant.busnr;
+            }
+            sLeveradres += "\n" + foundklant.postcode + " " + foundklant.gemeente;
+            setMandje(parseInt(foundklant.id), sLeveradres);
             visueelKlant();
             checkBestelSubmitMogelijk();
             $('#error').hide();
@@ -375,21 +462,79 @@ function loguitKlant() {
     klant.postcode = "";
     klant.gemeente = "";
     klant.telefoon = "";
-    setMandje(klant.id);
+    setMandje(klant.id, "");
     visueelKlant();
     checkBestelSubmitMogelijk();
 }
 
 // - registreer klant
 function registreerKlant(formdata) {
-    var str_klantdata = JSON.stringify(formdata);
-    $.post("jsonserver.php", {act: "registreer_klant", klantdata: str_klantdata })
-            .done(function(result){
-                console.log(result);
-            })
-            .fail(function(result){
-                console.log(result.statusText);
-            });
+    console.log(formdata);  // DEBUG
+    var formObject = {};
+    $.each(formdata, function(index, value){
+        formObject[value.name] = value.value;
+        //console.log(value.name + " = " + value.value);    // DEBUG
+    });
+    console.log(formObject);    // DEBUG
+    // - in geval van account maken
+    if (formObject.Uz44r != "" && formObject.P455w0r6 != "") {
+        // acount registratie gevraagd
+        var str_klantdata = JSON.stringify(formdata);
+        var klantUser = formObject.Uz44r;
+        var klantPass = formObject.P455w0r6;
+        $.post("jsonserver.php", {act: "registreer_klant", klantdata: str_klantdata })
+                .done(function(result){
+                    console.log(result);
+                    var foundklant = JSON.parse(result);
+                    if (foundklant == "BESTAAT") {
+                        console.log("Klant bestaat reeds"); // DEBUG
+                        console.log(formdata);  // DEBUG
+                        $('#interactie').hide();
+                        $('#info').hide();
+                        $('#error')
+                                .html("<p>Deze klant is reeds geregistreerd! U dient een andere combinatie van email en paswoord in te geven om een nieuwe account te registreren...</p>")
+                                .attr("title", "Klik om te sluiten")
+                                .css({ cursor: "pointer"})
+                                .show()
+                                .on("click", function(e){
+                                    e.preventDefault();
+                                    $('#user').soloFocus();
+                                });
+                        $('#interact').soloFocus();
+                        return;
+                    }
+                    if (foundklant == "SUCCES") {
+                        console.log("Succesvol aangemaakte klant"); // DEBUG
+                        loginKlant(klantUser, klantPass);
+                    }
+                })
+                .fail(function(result){
+                    console.log(result.statusText);
+                });
+
+        
+        
+        
+    } else {
+        // gewoon adresgegevens in tijdelijke klant zetten
+        console.log("Tijdelijke klant");    // DEBUG
+        setKlant(0, formObject.anaam, formObject.vnaam, "", formObject.straat, formObject.huisnr, formObject.busnr, formObject.postcode, formObject.gemeente, formObject.telefoon);
+        visueelKlant();
+        updateLeveradres();
+        checkBestelSubmitMogelijk();
+        $('#error').hide();
+        $('#info').hide();
+        $('#interactie')
+                .html("<p>U hebt tijdelijke adresgegevens ingevoerd; u kan nu uw bestelling vervolledigen.</p>")
+                .attr("title", "Klik om te sluiten")
+                .css({ cursor: "pointer"})
+                .show()
+                .on("click", function(e){
+                    e.preventDefault();
+                    $('#commerce').soloFocus();
+                });
+        $('#interact').soloFocus();
+    }
 }
 
 // - zet de Klant-var
@@ -404,21 +549,32 @@ function setKlant(id, anaam, vnaam, email, straat, huisnr, busnr, postcode, geme
     klant.postcode = postcode;
     klant.gemeente = gemeente;
     klant.telefoon = telefoon;
+    var sLeveradres = "";
+    if (straat != "" && straat != undefined) {
+        sLeveradres += vnaam + " " + anaam + "\n";
+        sLeveradres += straat + " " + huisnr;
+        if (busnr != "" && busnr != undefined) {
+            sLeveradres += " bus " + busnr;
+        }
+        sLeveradres += "\n" + postcode + " " + gemeente;
+    }
     sessionStorage.klant = JSON.stringify(klant);
-    console.log("De huidige klant:");
+    console.log("De huidige klant teruggevonden via setKlant:");
     console.log(klant);
-    setMandje(klant.id);
+    setMandje(klant.id, sLeveradres);
 };
 
 // - integreer de Klant in het Mandje
-function setMandje(klantid) {
-    localStorage.mandje.klant_id = parseInt(klantid);
+function setMandje(klantid, leveradres) {
+   localStorage.mandje.klant_id = parseInt(klantid);
+    localStorage.mandje.leveradres = leveradres;
     mandje.klant_id = parseInt(klantid);
+    mandje.leveradres = leveradres;
 };
 
 // - visuele update klantinfo
 function visueelKlant() {
-    if (klant.id === null) {
+    if (klant.id === null || isNaN(klant.id)) {
         $('#klant_actie_uit a').hide();
         $('#klant_actie_in a').show();
         $('#klant_identiteit').html("");
@@ -434,17 +590,29 @@ function visueelKlant() {
 // - update het leveradres
 function updateLeveradres() {
     console.log("Aanroep update leveradres");
-    var sAdres = "";
-    sAdres += klant.vnaam + " " + klant.anaam + "<br>";
-    sAdres += klant.straat + " " + klant.huisnr;
-    if (klant.busnr != "") {
-        sAdres += " bus " + klant.busnr;
+    if (klant.straat != "" && klant.straat != undefined) {
+        var sAdres = "";
+        sAdres += klant.vnaam + " " + klant.anaam + "<br>";
+        sAdres += klant.straat + " " + klant.huisnr;
+        if (klant.busnr != "") {
+            sAdres += " bus " + klant.busnr;
+        }
+        sAdres += "<br>" + klant.postcode + " " + klant.gemeente;
+        $('#mandje_leveradres').html(sAdres).show();
     }
-    sAdres += "<br>" + klant.postcode + " " + klant.gemeente;
-    $('#mandje_leveradres').html(sAdres).show();
 }
 
 /* * * FUNCTIES MANDJE * * */
+
+// - naar afrekenmodus
+function naarAfrekenMandje() {
+    $('article#mandje').soloFocus();
+    /*if ($('#mandje_leveradres').text() !== "") {
+        $('#mandje_leveradres').show(400);
+    }*/
+    $('#mandje_afrekenfunctie').hide(400);
+    $('#mandje_bestelfunctie').show(400);
+};
 
 // - voeg bestellijn toe aan Mandje
 function bestellijnInMandje(pizzaobject, aantal) {
@@ -461,7 +629,7 @@ function bestellijnInMandje(pizzaobject, aantal) {
         "aantal" : parseInt(aantal),
         "prijs" : parseInt(nu_prijs)
     };
-    console.log("Bestellijn: " + bestellijn);
+    //console.log(bestellijn);  // DEBUG
     if (mandje.bestelling.length > 0) {
         for (var i = 0; i < mandje.bestelling.length; i++) {
             if (mandje.bestelling[i].product_id == bestellijn.product_id) {
@@ -489,7 +657,7 @@ function ledigMandje() {
 // - check bestel mogelijk 
 function checkBestelSubmitMogelijk() {
     //console.log("checkBestel, klant id = " + mandje.klant_id);
-    if (isNaN(mandje.klant_id) || null == mandje.klant_id) {
+    if (isNaN(mandje.klant_id) || null === mandje.klant_id) {
         $('#form_mandjebestellen').hide();
         $('#formbestellen_aanmelden').show();
     } else {
@@ -539,8 +707,6 @@ function bevestigMandje() {
 // - visuele update van mandje
 function visueelMandje() {
     console.log(mandje);
-    // zoek element
-    var mandjeBeeld = $('#mandje');
     // vind de variabelen prijs en aantal
     var nItems = 0;
     var nPrijs = 0;
@@ -553,8 +719,12 @@ function visueelMandje() {
     $('#mandje_euro').html(" (" + parseFloat(nPrijs/100).toFixed(2) + " &euro;)");
     if(nItems == 0) {
         $('#mandje_acties').hide();
+        $('article#tempmandje').hide(400);  // aanpassen van tempmandje
+        $('#tempmandje_bestellen').hide();  // tempmandje bestelbutton
     } else {
         $('#mandje_acties').show();
+        $('article#tempmandje').show(400);  // aanpassen van tempmandje
+        $('#tempmandje_bestellen').show();  // tempmandje bestelbutton
     }
     localStorage.mandje = JSON.stringify(mandje);
     // update het mandje-veld
@@ -629,8 +799,13 @@ function visueelMandje() {
     }
     var eSubtotaal = $('<tr>').addClass("mandje_totaal");
     eSubtotaal.append($('<td>').attr("colspan", "2").html("Subtotaal")).append($('<td>').html("&euro; " + parseFloat(nTotaalbedrag / 100).toFixed(2))).append($('<td>').html("&nbsp;"));
+    var eMandjelijstKloon = eMandjelijst.clone(true);
+    var eSubtotaalKloon = eSubtotaal.clone(true);
     $('#mandje_overzicht table tbody').remove();
     $('#mandje_overzicht table').append(eMandjelijst).append(eSubtotaal);
+    // update het tempmandje
+    $('#tempmandje_overzicht table tbody').remove();
+    $('#tempmandje_overzicht table').append(eMandjelijstKloon).append(eSubtotaalKloon);
 }
 
 /* * * PIZZALIJST * * */
@@ -658,7 +833,7 @@ function vindPizzasAll() {
                 function(json_data){
                     pizzalijstAll = json_data;
                     for (var i = 0; i < json_data.length; i++) {
-                        console.log(json_data[i]); // debug: tonen eerste item in array
+                        //console.log(json_data[i]); // debug: tonen eerste item in array
                         toonPizza(json_data[i]);
                     }
                 }, 'json');
@@ -745,7 +920,31 @@ function toonPizza(pizzaobject) {
     })
             .html("In mandje")
             
-            .appendTo(prijsDiv).button();
+            .appendTo(prijsDiv)
+            .button()
+            /*.hover(
+            function(){
+                $('section#tempmandje').show(400)
+            },
+            function(){
+                $('section#tempmandje').hide(400)
+            })*/;
+    $('<a>')
+            .addClass("knop_mandje")
+            .attr("href", "#")
+            .on("click", function(e){
+                e.preventDefault();
+                $('section#tempmandje').toggle(400);
+    })
+            .html("<img src='img/basket20x.png' alt='Mandje' title='Mandje'>")
+            /*.hover(
+            function(){
+                $(this).html("Toon");
+            },
+            function(){
+                $(this).html("<img src='img/basket20x.png' alt='Mandje' title='Mandje'>");
+            })*/
+            .appendTo(prijsDiv);
     // prijs aanpassen aan promo
     if (parseInt(pizzaobject.promo_type) != 0) {
         var nuPrijs = parseFloat(pizzaobject.promo_prijs/100).toFixed(2);

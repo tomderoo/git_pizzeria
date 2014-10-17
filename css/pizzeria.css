@@ -112,7 +112,7 @@ div#quickmenu a:hover, div#quickmenu a:active {
     background-color: #941;
 }
 
-div#klant, div#mandje {
+div#klant, div#mandjefuncs {
     box-sizing: border-box;
     vertical-align: top;
     line-height: 30px;
@@ -124,11 +124,11 @@ div#klant, div#mandje {
     border-radius: 20px;
 }
 
-div#klant div, div#mandje div {
+div#klant div, div#mandjefuncs div {
     display: inline-block;
 }
 
-div#klant img, div#mandje img {
+div#klant img, div#mandjefuncs img {
     position: relative;
     top: 3px;
 }
@@ -213,17 +213,14 @@ div#mandje_overzicht {
     padding: 0;
 }
 
-div#mandje_overzicht table {
+div#mandje_overzicht table, div#tempmandje_overzicht table {
     margin-top: 10px;
     border: #63000C solid 1px;
     width: 100%;
 }
 
-div#mandje_overzicht table thead tr td {
+div#mandje_overzicht table thead tr td, div#tempmandje_overzicht table thead tr td {
     border-bottom: #63000C solid 1px;
-}
-
-div#mandje_overzicht table thead tr td {
     background-color: #f0e9e9;
 }
 
@@ -304,6 +301,27 @@ p.promo_tijd {
     /*float: right;*/
 }
 
+.knop_mandje {
+    display: inline-block;
+    background-color: brown;
+    border: 1px solid #cdc3b7;
+    border-radius: 6px;
+    padding: 5px;
+    height: 1.6em;
+    width: 1.6em;
+    position: relative;
+    top: 3px;
+    opacity: 0.8;
+}
+
+.knop_mandje:hover, .knop_mandje:active {
+    opacity: 1;
+}
+
+.faded {
+    opacity: 0.5;
+}
+
 .pizzalijst_pizza {
     padding-left: 210px;
     padding-top: 10px;
@@ -364,12 +382,48 @@ p.pizza_oudprijs {
     color: red;
 }
 
-/* * * * * ARTICLE - user * * * * */
-
-article#user {
-    display: none;
+/* * * * * TEMPMANDJE * * * * */
+section#tempmandje {
+    background-color: white;
+    position:fixed;
+    left: 10vw;
+    top: 10vh;
+    width: 500px;
+    z-index: 10000;
+    box-shadow: #63000C 3px 3px 30px;
+    border-radius: 20px;
+    padding: 10px;
 }
 
+section#tempmandje h3 {
+    margin: -10px -10px 5px;
+    padding: 10px;
+    background-color: #63000C;
+    color: white;
+    border-radius: 20px 20px 0 0;
+}
+
+section#tempmandje button {
+    margin-top: 10px;
+}
+
+/* * * * * ARTICLE - user * * * * */
+
+/*article#user {
+    display: none;
+    border: none;
+    margin: 20px auto;
+    padding: 0;
+    font-family: 'Source Sans Pro';
+}
+
+article#user * {
+    font-family: 'Source Sans Pro';
+}*/
+
+article#user div h3 span {
+    font-size: 0.5em;
+}
 
 /* * * * * FORM Validate * * * * */
 

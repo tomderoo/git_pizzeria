@@ -178,8 +178,9 @@ class PizzaService {
         $besteldatum = date("Y-m-d H:i:s");
         $leverdatum = $mandje->leverdatum;
         $opmerking = $mandje->klant_opmerking;
+        $koerierbrief = $mandje->leveradres;
         $bestellingDAO = new BestellingDAO();
-        $bestellingId = $bestellingDAO->maakNieuweBestelling($klant_id, $besteldatum, $leverdatum, "", "", 0, $opmerking);
+        $bestellingId = $bestellingDAO->maakNieuweBestelling($klant_id, $besteldatum, $leverdatum, $koerierbrief, "", 0, $opmerking);
         // maak de aparte bestellijnen
         $bestellijnDAO = new BestellijnDAO();
         foreach ($mandje->bestelling as $bestellijn) {

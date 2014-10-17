@@ -65,9 +65,9 @@ switch ($_POST["act"]) {
         $info = "";
         try {
             $service->nieuweKlant($anaam, $vnaam, $straat, $huisnr, $busnr, $postcode, $gemeente, $telefoon, $email, $paswoord, $status, $info);
-            echo("Succes");
+            echo json_encode("SUCCES");
         } catch (resource\Exception\FouteInvoerException $ex) {
-            echo json_encode("Klant bestaat reeds");
+            echo json_encode("BESTAAT");
         }
         break;
     
