@@ -206,6 +206,12 @@ div#mandje_leveradres {
     background-color: #f0e9e9;
 }
 
+a#adreswijziger, a#adresbevestiger {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.8em;
+}
+
 div#mandje_overzicht {
     box-sizing: border-box;
     margin: 0;
@@ -255,6 +261,12 @@ tr.mandje_totaal td {
     font-weight: bold;
 }
 
+tr.mandje_korting td {
+    font-weight: normal;
+    border-top: #63000C solid 1px;
+    color: red;
+}
+
 /* * * * * ARTICLE - commerce * * * * */
 
 /* * * Pizzalijst * * */
@@ -268,8 +280,11 @@ div.promo_seiz {
 div.promo_tijd {
     box-shadow: #615 1px 1px 10px;
 }
+div.promo_klant {
+    box-shadow: blue 1px 1px 10px;
+}
 
-p.promo_chef, p.promo_seiz, p.promo_tijd {
+p.promo_chef, p.promo_seiz, p.promo_tijd, p.promo_klant {
     font-family: 'Indie Flower', sans-serif;
     font-size: 1.1em;
     display: inline-block;
@@ -295,6 +310,11 @@ p.promo_seiz {
 p.promo_tijd {
     background-color: purple;
     box-shadow: #615 1px 1px 10px;
+}
+
+p.promo_klant {
+    background-color: blue;
+    box-shadow: blue 1px 1px 10px;
 }
 
 .knop_inmandje {

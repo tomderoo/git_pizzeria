@@ -20,7 +20,8 @@ var klant = {
     "busnr": "",
     "postcode": "",
     "gemeente": "",
-    "telefoon": ""
+    "telefoon": "",
+    "status": 0
 };
 
 var mandje = {
@@ -31,6 +32,8 @@ var mandje = {
     "leveradres": "",
     "klant_opmerking": ""
 };
+
+var pizzalijstVolledig = null;
 
 var pizzalijstPromo = null;
 
@@ -43,15 +46,21 @@ $(function(){
     /*** GLOBAL ELEMENTS ***/
     var $eLinkSuggesties = $('#link_suggesties');
     var $eLinkAanbod = $('#link_aanbod');
+    var $eLinkBusiness = $('#link_business');
     var $eLinkMandjeBekijk = $('#bekijk_mandje');
     var $eLinkMandjeLedig = $('#ledig_mandje');
     var $eLinkUitloggen = $('#klant_actie_uit a');
     var $eLinkAanmelden = $('#klant_actie_in a');
     var $eSpace_Commerce = $('article#commerce');
+    var $eSpace_Business = $('article#business');
     var $eSpace_Interact = $('article#interact');
     var $eSpace_Mandje = $('article#mandje');
     var $eSpace_User = $('article#user');
     
+    /* * * PIZZALIJST volledig laten zien * * */
+    vulPizzalijst();
+    
+    /* * * STORAGE KLANT EN MANDJE * * */
     //localStorage.clear();     // Debug functie: resetten van localStorage
     //sessionStorage.clear();   // Debug functie: resetten van sessionStorage
     //
@@ -90,7 +99,11 @@ $(function(){
     }
     setMandje(klant.id, sLeveradres);
     
-    // update het mandje
+    /* * * TOON PIZZAS OP PAGINA * * */
+    vindPizzasPromo();
+    //$eSpace_Commerce.soloFocus();
+    
+    /* * * VISUEEL update het mandje * * */
     console.log("Update het mandje");   // DEBUG
     visueelMandje();
     
@@ -99,6 +112,7 @@ $(function(){
     $('#info').hide();
     $('#interactie').hide();
     $('#tempmandje').hide();
+    $('#business').hide();
     $('#user').hide();  //.tabs();
     $('#user #tab_accountnee').hide();
     /*if (mandje.bestelling.length > 0) {
@@ -119,15 +133,26 @@ $(function(){
         $('#tempmandje').toggle(400);
     });
     
-    /* * * PIZZALIJST * * */
-    vindPizzasPromo();
-    //$eSpace_Commerce.soloFocus();
-    
     /* * * USER FORMS * * */
     $('#formbestellen_submit').button();
     $('#formbestellen_aanmelden').button();
     $('#form_aanmelden input[type=submit]').button();
     $('#form_registersubmit').button();
+    
+    // - validator uitbreiden met checkPostcode
+    jQuery.validator.addMethod("validPostcode", function(value, element){
+        var sGemeentewaarde = value;
+        var aToegelatenGemeenten = [
+            2000, 2010, 2020, 2030, 2040, 2050, 2100, 2170, 2140
+        ];
+        var bGoedeGemeente = false;
+        for (var i = 0; i < aToegelatenGemeenten.length; i++) {
+            if (sGemeentewaarde == aToegelatenGemeenten[i]) {
+                bGoedeGemeente = true;
+            }
+        };
+        return bGoedeGemeente;
+    }, "In deze postcode wordt niet geleverd, kies een andere gemeente");
     
     // - wel of niet account
     $('article#user h3 span a').on("click", function(e){
@@ -202,7 +227,10 @@ $(function(){
             straat: "required",
             huisnr: "required",
             gemeente: "required",
-            postcode: "required"
+            postcode: {
+                required: true,
+                validPostcode: true
+            }
         },
         messages: {
             Uz44r: "Vul een geldig emailadres in",
@@ -213,7 +241,10 @@ $(function(){
             straat: "Verplicht veld",
             huisnr: "Verplicht veld",
             gemeente: "Verplicht veld",
-            postcode: "Verplicht veld"
+            postcode: {
+                required: "Verplicht veld",
+                validPostcode: "In deze postcode wordt niet geleverd..."
+            }
         },
         submitHandler: function(form) {
             console.log("Form-registreren: gedrukt op submit");
@@ -291,9 +322,76 @@ $(function(){
     });
     
     // mogelijkheid tot adresverandering => toggle van invoerveld
-    // NOG UITVOEREN
+    $('a#adresbevestiger').hide();
+    $('#form_adreswijziger').hide();
     
-    /* * * EVENT HANDLERS * * */
+    $('a#adreswijziger').on("click", function(e){
+        console.log("Geklikt op adreswijziger");    // DEBUG
+        e.preventDefault();
+        $('div#mandje_adresveld').hide();
+        var sHuidigAdres = $('div#mandje_adresveld').html();
+        console.log(sHuidigAdres);
+        var aAdresGegevens = sHuidigAdres.split("<br>");
+        console.log(aAdresGegevens);
+        var sNaamVoornaam = aAdresGegevens[0];
+        var sStraat = aAdresGegevens[1];
+        var sPostcodeGemeente = aAdresGegevens[2];
+        var nFirstSpace = sPostcodeGemeente.indexOf(" ");
+        var sPostcode = sPostcodeGemeente.substr(0, nFirstSpace);
+        var sGemeente = sPostcodeGemeente.substr((nFirstSpace)+1, sPostcodeGemeente.length-1);
+        console.log("Naam en voornaam: " + sNaamVoornaam);
+        console.log("Straatgegevens: " + sStraat);
+        console.log("Postcode: " + sPostcode);
+        console.log("Gemeente: " + sGemeente);
+        var sLnAdres = sHuidigAdres.replace(/<br>/g, "\n");
+        console.log(sLnAdres);
+        $('input#form_adresw_naam').val(sNaamVoornaam);
+        $('input#form_adresw_straat').val(sStraat);
+        $('input#form_adresw_postcode')
+                .val(sPostcode)
+                .on("blur", function(){
+                    $(this).css({ outline: "none" });
+                    checkGemeente($(this));
+        });
+        $('input#form_adresw_gemeente').val(sGemeente);
+        $('#form_adreswijziger').show();
+        /*var eInvoerveld = $('<textarea>')
+                .html(sLnAdres)
+                .attr("id", "nieuwadresveld")
+                .css({
+                    width: "50%",
+                    height: "90px",
+                    resize: "none",
+                    display: "block"
+                })
+                .insertBefore($(this));*/
+        $("#form_mandjebestellen :input").prop("disabled", true);
+        $(this).hide();
+        $('a#adresbevestiger').show();
+    });
+    
+    $('a#adresbevestiger').on("click", function(e){
+        console.log("Geklikt op bevestigen adres"); // DEBUG
+        e.preventDefault();
+        var sNaamVoornaam = $('input#form_adresw_naam').val();
+        var sStraat = $('input#form_adresw_straat').val();
+        var sPostcode = $('input#form_adresw_postcode').val();
+        var sGemeente = $('input#form_adresw_gemeente').val();
+        var sNieuwAdres = sNaamVoornaam + "\n" + sStraat + "\n" + sPostcode + " " + sGemeente;
+        console.log(sNieuwAdres);
+        mandje.leveradres = sNieuwAdres;
+        var sNieuwBrAdres = sNieuwAdres.replace(/\n/g, "<br>");
+        console.log(sNieuwBrAdres);
+        $('div#mandje_adresveld').html(sNieuwBrAdres).show();
+        $('div#form_adreswijziger').hide();
+        $("#form_mandjebestellen :input").prop("disabled", false);
+        $(this).hide();
+        $('a#adreswijziger').show();
+        console.log("Nieuwe inhoud mandje:");   // DEBUG
+        console.log(mandje);    // DEBUG
+    });
+    
+    /* * * EVENT HANDLERS algemeen * * */
         
         // - LINK Suggesties
         $eLinkSuggesties.on("click", function(e){
@@ -307,6 +405,12 @@ $(function(){
             e.preventDefault();
             vindPizzasAll();
             $eSpace_Commerce.soloFocus();
+        });
+        
+        // - LINK Business
+        $eLinkBusiness.on("click", function(e){
+            e.preventDefault();
+            $eSpace_Business.soloFocus();
         });
         
         // - Bekijk mandje
@@ -423,7 +527,7 @@ function loginKlant(email, paswoord) {
             }
             console.log("Klant gevonden:");
             console.log(foundklant);
-            setKlant(foundklant.id, foundklant.anaam, foundklant.vnaam, foundklant.email, foundklant.straat, foundklant.huisnr, foundklant.busnr, foundklant.postcode, foundklant.gemeente, foundklant.telefoon);
+            setKlant(foundklant.id, foundklant.anaam, foundklant.vnaam, foundklant.email, foundklant.straat, foundklant.huisnr, foundklant.busnr, foundklant.postcode, foundklant.gemeente, foundklant.telefoon, foundklant.status);
             var sLeveradres = "";
             sLeveradres += foundklant.vnaam + " " + foundklant.anaam + "\n";
             sLeveradres += foundklant.straat + " " + foundklant.huisnr;
@@ -433,6 +537,8 @@ function loginKlant(email, paswoord) {
             sLeveradres += "\n" + foundklant.postcode + " " + foundklant.gemeente;
             setMandje(parseInt(foundklant.id), sLeveradres);
             visueelKlant();
+            visueelMandje();
+            vindPizzasPromo();
             checkBestelSubmitMogelijk();
             $('#error').hide();
             $('#info').hide();
@@ -465,7 +571,10 @@ function loguitKlant() {
     klant.postcode = "";
     klant.gemeente = "";
     klant.telefoon = "";
+    klant.status = 0;
     setMandje(klant.id, "");
+    vindPizzasPromo();
+    visueelMandje();
     visueelKlant();
     checkBestelSubmitMogelijk();
 }
@@ -521,7 +630,7 @@ function registreerKlant(formdata) {
     } else {
         // gewoon adresgegevens in tijdelijke klant zetten
         console.log("Tijdelijke klant");    // DEBUG
-        setKlant(0, formObject.anaam, formObject.vnaam, "", formObject.straat, formObject.huisnr, formObject.busnr, formObject.postcode, formObject.gemeente, formObject.telefoon);
+        setKlant(0, formObject.anaam, formObject.vnaam, "", formObject.straat, formObject.huisnr, formObject.busnr, formObject.postcode, formObject.gemeente, formObject.telefoon, 0);
         visueelKlant();
         updateLeveradres();
         checkBestelSubmitMogelijk();
@@ -541,8 +650,8 @@ function registreerKlant(formdata) {
 }
 
 // - zet de Klant-var
-function setKlant(id, anaam, vnaam, email, straat, huisnr, busnr, postcode, gemeente, telefoon) {
-    klant.id = id;
+function setKlant(id, anaam, vnaam, email, straat, huisnr, busnr, postcode, gemeente, telefoon, status) {
+    klant.id = parseInt(id);
     klant.anaam = anaam;
     klant.vnaam = vnaam;
     klant.email = email;
@@ -552,6 +661,7 @@ function setKlant(id, anaam, vnaam, email, straat, huisnr, busnr, postcode, geme
     klant.postcode = postcode;
     klant.gemeente = gemeente;
     klant.telefoon = telefoon;
+    klant.status = parseInt(status);
     var sLeveradres = "";
     if (straat != "" && straat != undefined) {
         sLeveradres += vnaam + " " + anaam + "\n";
@@ -581,7 +691,8 @@ function visueelKlant() {
         $('#klant_actie_uit a').hide();
         $('#klant_actie_in a').show();
         $('#klant_identiteit').html("");
-        $('#mandje_leveradres').html("").hide();
+        $('#mandje_adresveld').html("");
+        $('#mandje_leveradres').hide();
     } else {
         $('#klant_actie_in a').hide();
         $('#klant_actie_uit a').show();
@@ -601,7 +712,26 @@ function updateLeveradres() {
             sAdres += " bus " + klant.busnr;
         }
         sAdres += "<br>" + klant.postcode + " " + klant.gemeente;
-        $('#mandje_leveradres').html(sAdres).show();
+        $('#mandje_adresveld').html(sAdres);
+        $('#mandje_leveradres').show();
+    }
+}
+
+// - check of de gemeente beleverd kan worden
+function checkGemeente(eInput) {
+    var sGemeentewaarde = eInput.val();
+    var aToegelatenGemeenten = [
+        2000, 2010, 2020, 2030, 2040, 2050, 2100, 2170, 2140
+    ];
+    var bGoedeGemeente = false;
+    for (var i = 0; i < aToegelatenGemeenten.length; i++) {
+        if (sGemeentewaarde == aToegelatenGemeenten[i]) {
+            bGoedeGemeente = true;
+        }
+    };
+    if (false == bGoedeGemeente) {
+        alert("In deze gemeente kan niet geleverd worden! Kies een andere gemeente...");
+        eInput.css({ outline: "1px dotted red" }).focus();
     }
 }
 
@@ -621,7 +751,7 @@ function naarAfrekenMandje() {
 function bestellijnInMandje(pizzaobject, aantal) {
     var bProductReedsBesteld = false;
     var nu_prijs = 0;
-    if (pizzaobject.promo_type != 0) {
+    if ((pizzaobject.promo_type != 0 && pizzaobject.promo_type != 4) || (pizzaobject.promo_type == 4 && klant.status > 0)) {
         nu_prijs = pizzaobject.promo_prijs;
     } else {
         nu_prijs = pizzaobject.prijs;
@@ -709,7 +839,24 @@ function bevestigMandje() {
 
 // - visuele update van mandje
 function visueelMandje() {
-    console.log(mandje);
+    //console.log("Mandje voor statuscheck"); // DEBUG
+    //console.log(mandje);    // DEBUG
+    // check klantstatus en zet prijzen in mandje bestellijnen navenant
+    for (var i = 0; i < mandje.bestelling.length; i++) {
+        var pizzalijnPID = mandje.bestelling[i].product_id;
+        for (var j = 0; j < pizzalijstVolledig.length; j++) {
+            var pizzalijstPID = pizzalijstVolledig[j].id;
+            if (pizzalijnPID == pizzalijstPID) {
+                if (parseInt(pizzalijstVolledig[j].promo_type) == 4) {
+                    if (klant.status > 0) {
+                        mandje.bestelling[i].prijs = parseInt(pizzalijstVolledig[j].promo_prijs);
+                    } else {
+                        mandje.bestelling[i].prijs = parseInt(pizzalijstVolledig[j].prijs);
+                    }
+                }
+            }
+        }
+    }
     // vind de variabelen prijs en aantal
     var nItems = 0;
     var nPrijs = 0;
@@ -809,6 +956,31 @@ function visueelMandje() {
     // update het tempmandje
     $('#tempmandje_overzicht table tbody').remove();
     $('#tempmandje_overzicht table').append(eMandjelijstKloon).append(eSubtotaalKloon);
+    // klantlevel checken voor korting
+    if (klant.status > 0) {
+        var nKlantKorting = parseInt(klant.status) * 2.5;
+        var nKortingBedrag = Math.round(nTotaalbedrag * nKlantKorting / 100);
+        //var nKortingTotaalbedrag = nTotaalbedrag * (100 - nKlantKorting) / 100; // effectieve bereking maakt round-errors
+        var nKortingTotaalbedrag = parseFloat(nTotaalbedrag) - parseFloat(nKortingBedrag);
+        var eKorting = $('<tr>').addClass("mandje_korting enkelkorting");
+        eKorting.append($('<td>').attr("colspan", "2").html("Klantkorting " + parseFloat(nKlantKorting).toFixed(2) + " %")).append($('<td>').html("&euro; " + parseFloat(nKortingBedrag / 100).toFixed(2) + " -")).append($('<td>').html("&nbsp;"));
+        var eNieuwTotaalBedrag = $('<tr>').addClass("mandje_totaal enkelkorting");
+        eNieuwTotaalBedrag.append($('<td>').attr("colspan", "2").html("Eindtotaal")).append($('<td>').html("&euro; " + parseFloat(nKortingTotaalbedrag / 100).toFixed(2))).append($('<td>').html("&nbsp;"));
+        var eKortingKloon = eKorting.clone(true);
+        var eNieuwTotaalBedragKloon = eNieuwTotaalBedrag.clone(true);
+        $('#mandje_overzicht table').append(eKorting).append(eNieuwTotaalBedrag);
+        $('#tempmandje_overzicht table').append(eKortingKloon).append(eNieuwTotaalBedragKloon);
+    } else {
+        verwijderKlantkorting();
+    };
+    
+}
+
+// - verwijder klantkorting
+function verwijderKlantkorting() {
+    if ($('.enkelkorting').length > 0) {
+        $('.enkelkorting').remove();
+    }
 }
 
 /* * * PIZZALIJST * * */
@@ -818,17 +990,47 @@ function clearPizzalijst() {
     $('#pizzalijst_container').html("");
 };
 
+// - vul pizzalijst met alle pizza's
+function vulPizzalijst() {
+    // JSON query om pizzalijstAll te vullen
+    var json_url = "jsonserver.php";
+    var json_query = { act: "show_all" };
+    /*$.post(
+            json_url,
+            json_query,
+            function(json_data){
+                console.log(json_data); // DEBUG
+                pizzalijstVolledig = json_data;
+            }, 'json');*/
+    // bovenstaande call is asynchroon, en we moeten een synchrone hebben, dus:
+    pizzalijstVolledig = JSON.parse(
+            $.ajax({
+                type: "POST",
+                url: json_url,
+                data: json_query,
+                async: false
+            }).responseText);
+    // pizzalijst sorteren
+    pizzalijstVolledig.sort(function(a, b){
+        return (parseInt(a.prijs) - parseInt(b.prijs));
+    });
+    console.log(pizzalijstVolledig);
+}
+
 // - retrieve pizza's: ALL
 function vindPizzasAll() {
     clearPizzalijst();
-    if (pizzalijstAll != null) {
-        for (var i = 0; i < pizzalijstAll.length; i++) {
+    if (pizzalijstVolledig != null) {
+        var pizzaAllLijst = pizzalijstVolledig.sort(function(a, b){
+            return (parseInt(a.prijs) - parseInt(b.prijs));
+        });
+        for (var i = 0; i < pizzaAllLijst.length; i++) {
             //console.log("Teruggave gevulde array: " + pizzalijstAll[i]); // debug: tonen eerste item in array
-            toonPizza(pizzalijstAll[i]);
+            toonPizza(pizzaAllLijst[i]);
         }
     } else {
         // JSON query om pizzalijstAll te vullen
-        var json_url = "jsonserver.php";
+        /*var json_url = "jsonserver.php";
         var json_query = { act: "show_all" };
         $.post(
                 json_url,
@@ -839,21 +1041,32 @@ function vindPizzasAll() {
                         //console.log(json_data[i]); // debug: tonen eerste item in array
                         toonPizza(json_data[i]);
                     }
-                }, 'json');
+                }, 'json');*/
+        //vulPizzalijst();
+        //vindPizzasAll();
     }
 };
 
 // - retrieve pizza's: PROMO
 function vindPizzasPromo() {
     clearPizzalijst();
-    if (pizzalijstPromo != null) {
-        for (var i = 0; i < pizzalijstPromo.length; i++) {
+    if (pizzalijstVolledig != null) {
+        var pizzaPromoLijst = pizzalijstVolledig.sort(function(a, b){
+            return (parseInt(b.promo_type) - parseInt(a.promo_type));
+        });
+        for (var i = 0; i < pizzaPromoLijst.length; i++) {
             //console.log("Teruggave gevulde array: " + pizzalijstPromo[i]); // debug: tonen eerste item in array
-            toonPizza(pizzalijstPromo[i]);
+            var nPizzaPromotype = parseInt(pizzaPromoLijst[i].promo_type);
+            if (nPizzaPromotype > 0 && nPizzaPromotype != 4) {
+                toonPizza(pizzaPromoLijst[i]);
+            }
+            if (nPizzaPromotype == 4 && klant.status > 0) {
+                toonPizza(pizzaPromoLijst[i]);
+            }
         }
     } else {
         // JSON query om pizzalijstAll te vullen
-        var json_url = "jsonserver.php";
+        /*var json_url = "jsonserver.php";
         var json_query = { act: "show_promo" };
         $.post(
                 json_url,
@@ -864,7 +1077,9 @@ function vindPizzasPromo() {
                         //console.log(json_data[i]); // debug: tonen eerste item in array
                         toonPizza(json_data[i]);
                     }
-                }, 'json');
+                }, 'json');*/
+        //vulPizzalijst();
+        //vindPizzasPromo();
     }
 };
 
@@ -912,6 +1127,13 @@ function toonPizza(pizzaobject) {
                 .appendTo(tekstDiv);
         dezePizza.addClass("promo_tijd");
     };
+    if (parseInt(pizzaobject.promo_type) == 4 && klant.status > 0) {
+        $('<p>')
+                .html("Speciaal geselecteerd voor jou, " + klant.vnaam + " " + klant.anaam + "!")
+                .addClass("promo_klant")
+                .appendTo(tekstDiv);
+        dezePizza.addClass("promo_klant");
+    }
     // prijs div met prijzen en button
     var prijsDiv = $('<div>').addClass("pizza_prijsdiv");
     $('<a>')
@@ -925,13 +1147,6 @@ function toonPizza(pizzaobject) {
             
             .appendTo(prijsDiv)
             .button()
-            /*.hover(
-            function(){
-                $('section#tempmandje').show(400)
-            },
-            function(){
-                $('section#tempmandje').hide(400)
-            })*/;
     $('<a>')
             .addClass("knop_mandje")
             .attr("href", "#")
@@ -940,16 +1155,9 @@ function toonPizza(pizzaobject) {
                 $('section#tempmandje').toggle(400);
     })
             .html("<img src='img/basket20x.png' alt='Mandje' title='Mandje'>")
-            /*.hover(
-            function(){
-                $(this).html("Toon");
-            },
-            function(){
-                $(this).html("<img src='img/basket20x.png' alt='Mandje' title='Mandje'>");
-            })*/
             .appendTo(prijsDiv);
     // prijs aanpassen aan promo
-    if (parseInt(pizzaobject.promo_type) != 0) {
+    if ((parseInt(pizzaobject.promo_type) != 0 && parseInt(pizzaobject.promo_type) != 4) || parseInt(pizzaobject.promo_type) == 4 && klant.status > 0) {
         var nuPrijs = parseFloat(pizzaobject.promo_prijs/100).toFixed(2);
         var oudPrijs = parseFloat(pizzaobject.prijs/100).toFixed(2);
         $('<p>').addClass("pizza_nuprijs").html("&euro; " + nuPrijs).appendTo(prijsDiv);

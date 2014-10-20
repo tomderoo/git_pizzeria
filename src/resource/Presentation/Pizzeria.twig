@@ -32,6 +32,7 @@
                     <div id="quickmenu">
                         <a id="link_suggesties" href="#">Suggesties</a>
                         <a id="link_aanbod" href="#">Volledig aanbod</a>
+                        <a id="link_business" href="#">Over ons</a>
                     </div>
                     <div id="klant">
                         <img src="img/user20x.png" alt="User">
@@ -85,7 +86,17 @@
             
             <article id="mandje">
                 <h3>Bestellen</h3>
-                <div id="mandje_leveradres"></div>
+                <div id="mandje_leveradres">
+                    <div id="mandje_adresveld"></div>
+                    <div id="form_adreswijziger">
+                        <input type="text" id="form_adresw_naam" required> Voornaam en naam<br>
+                        <input type="text" id="form_adresw_straat" required> Straat, huisnummer en busnummer<br>
+                        <input type="text" id="form_adresw_postcode" required> Postcode<br>
+                        <input type="text" id="form_adresw_gemeente" required> Gemeente
+                    </div>
+                    <a id="adreswijziger" href="#">Wijzig leveradres</a>
+                    <a id="adresbevestiger" href="#">Bevestig wijziging</a>
+                </div>
                 <div id="mandje_overzicht">
                     <table>
                         <thead>
@@ -116,6 +127,12 @@
                 <h3 id="pizzalijst_titel">Onze pizza's</h3>
                 
                 <div id="pizzalijst_container"></div>
+            </article>
+            
+            <article id="business">
+                <h3 id="business_titel">Authentic Pizza's, tot uw dienst!</h3>
+                
+                <div id="business_container">Lorem ipsum blablabla</div>
             </article>
             
             <article id="user">
