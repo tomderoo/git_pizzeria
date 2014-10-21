@@ -402,7 +402,7 @@ p.pizza_oudprijs {
     color: red;
 }
 
-/* * * * * TEMPMANDJE * * * * */
+/* * * * * SECTION: TEMPMANDJE * * * * */
 section#tempmandje {
     background-color: white;
     position:fixed;
@@ -445,6 +445,64 @@ article#user div h3 span {
     font-size: 0.5em;
 }
 
+/* * * * * ARTICLE business * * * * */
+
+#business_container div#reactielijst {
+    width: 60%;
+    box-sizing: border-box;
+    padding: 10px;
+    outline: red dotted 1px;
+    float: left;
+}
+
+#business_container div#reactielijst p {
+    margin: 0 0 10px;
+    background-color: #ffb;
+    box-shadow: #960 1px 1px 10px;
+    border-radius: 5px;
+    padding: 5px 20px;
+    font-family: 'Indie flower', cursive;
+    display: table;
+    clear: both;
+    min-width: 50%;
+}
+
+div#reactielijst p:nth-child(odd) {
+    -ms-transform: rotate(-1deg); /* IE 9 */
+    -webkit-transform: rotate(-1deg); /* Chrome, Safari, Opera */
+    transform: rotate(-1deg);
+    float: left;
+}
+
+div#reactielijst p:nth-child(even) {
+    -ms-transform: rotate(1deg); /* IE 9 */
+    -webkit-transform: rotate(1deg); /* Chrome, Safari, Opera */
+    transform: rotate(1deg);
+    float: right;
+}
+
+#business_container div#reactieinterface {
+    width: 40%;
+    box-sizing: border-box;
+    padding: 10px;
+    outline: green dotted 1px;
+    float: right;
+    border-radius: 20px;
+    background-color: #fdc;
+    box-shadow: #63000c 2px 2px 20px;
+    margin-bottom: 100px;
+}
+
+#business_container div#reactieinterface h4 {
+    margin: 0 0 10px;
+}
+
+#business_container div#reactieinterface textarea {
+    width: 98%;
+    height: 75px;
+    resize: none;
+}
+
 /* * * * * FORM Validate * * * * */
 
 input.error {
@@ -463,6 +521,43 @@ p.form_info {
     padding: 5px 0;
 }
 
+/* * * * * SECTION: klantenreactie * * * * */
+
+section#floatreactie {
+    background-color: #ffb;
+    position: absolute;
+    right: 50px;
+    top: 20px;
+    z-index: 2;
+    box-shadow: #960 3px 3px 30px;
+    border-radius: 5px;
+    padding: 5px;
+    max-width: 325px;
+    -ms-transform: rotate(2deg); /* IE 9 */
+    -webkit-transform: rotate(2deg); /* Chrome, Safari, Opera */
+    transform: rotate(2deg);
+}
+
+section#floatreactie h3 {
+    font-size: 1em;
+    margin: 0;
+    display: none;
+}
+
+div#floatreactie_tekst {
+    font-family: 'Indie Flower', sans-serif;
+}
+
+div#floatreactie_tekst p:first-child {
+    margin: 5px;
+    text-align: center;
+}
+
+div#floatreactie_tekst p:last-child {
+    margin: 0px 10px;
+    font-weight: bold;
+    text-align: right;
+}
 /* * * * * OVERIGE * * * * */
 
 .floatleft {

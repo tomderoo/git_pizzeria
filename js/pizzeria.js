@@ -39,6 +39,8 @@ var pizzalijstPromo = null;
 
 var pizzalijstAll = null;
 
+var reactiesAll = null;
+
 /* * * * * AUTOLOADS * * * * */
 
 $(function(){
@@ -115,22 +117,53 @@ $(function(){
     $('#business').hide();
     $('#user').hide();  //.tabs();
     $('#user #tab_accountnee').hide();
-    /*if (mandje.bestelling.length > 0) {
-        $('#tempmandje').show(400);
-    };*/
     
-    // zwevend mandje
+    /* * * ZWEVEND MANDJE * * */
+    $('#tempmandje')
+            .css({ cursor: "move" })
+            .draggable({
+                containment: "window"
+    });
+    // - variabele knop
     if(mandje.bestelling.length > 0) {
         $('#tempmandje_bestellen').show();
     };
+    // - eventhandlers voor activatie en verwijdering
+    $('#mandjefuncs img').css({ cursor: "pointer" }).on("click", function(){
+        $('#tempmandje').toggle(400);
+    });
     $('#tempmandje_bestellen').button().on("click", function(e){
         e.preventDefault();
         $('#tempmandje').toggle(400);
         $('article#mandje').soloFocus();
-    })
+    });
     $('#tempmandje_sluiten').button().on("click", function(e){
         e.preventDefault();
         $('#tempmandje').toggle(400);
+    });
+    
+    /* * * OVER ONS - bedrijfspagina met info en reacties * * */
+    vulReactielijst();
+    
+    zetTopReactie();
+    
+    zetBusinessRuimte();
+
+    $('#reactieveld_ingelogd').hide();
+    $('#reactieveld_nietingelogd').show();
+    if (klant.id != null && klant.id != 0) {
+        reactieveldToggle();
+    }
+    
+    lockoutCheck();
+    
+    $('#reactie_plaatsen').button().on("click", function(e){
+        e.preventDefault();
+        bevestigReactie();
+    });
+    $('#reactie_login').button().on("click", function(e){
+        e.preventDefault();
+        $('#user').soloFocus();
     });
     
     /* * * USER FORMS * * */
@@ -142,16 +175,15 @@ $(function(){
     // - validator uitbreiden met checkPostcode
     jQuery.validator.addMethod("validPostcode", function(value, element){
         var sGemeentewaarde = value;
-        var aToegelatenGemeenten = [
+        var aToegelatenGemeenten = [    // Voorbeeld-array...
             2000, 2010, 2020, 2030, 2040, 2050, 2100, 2170, 2140
         ];
-        var bGoedeGemeente = false;
         for (var i = 0; i < aToegelatenGemeenten.length; i++) {
             if (sGemeentewaarde == aToegelatenGemeenten[i]) {
-                bGoedeGemeente = true;
+                return true;
             }
         };
-        return bGoedeGemeente;
+        return false;
     }, "In deze postcode wordt niet geleverd, kies een andere gemeente");
     
     // - wel of niet account
@@ -540,6 +572,7 @@ function loginKlant(email, paswoord) {
             visueelMandje();
             vindPizzasPromo();
             checkBestelSubmitMogelijk();
+            reactieveldToggle();
             $('#error').hide();
             $('#info').hide();
             $('#interactie')
@@ -577,6 +610,7 @@ function loguitKlant() {
     visueelMandje();
     visueelKlant();
     checkBestelSubmitMogelijk();
+    reactieveldToggle();
 }
 
 // - registreer klant
@@ -1171,3 +1205,191 @@ function toonPizza(pizzaobject) {
     imgDiv.appendTo(dezePizza);
     prijsDiv.appendTo(dezePizza);
 };
+
+/* * * REACTIES * * */
+
+function vulReactielijst() {
+    // JSON query om reactiesAll te vullen
+    var json_url = "jsonserver.php";
+    var json_query = { act: "show_reacties" };
+    /*$.post(
+            json_url,
+            json_query,
+            function(json_data){
+                console.log(json_data); // DEBUG
+                reactiesAll = json_data;
+            }, 'json').done(function(result){
+                console.log(result);
+            });*/
+    // bovenstaande call is asynchroon, en we moeten een synchrone hebben, dus:
+    reactiesAll = JSON.parse(
+            $.ajax({
+                type: "POST",
+                url: json_url,
+                data: json_query,
+                async: false
+            }).responseText);
+    //console.log(reactiesAll); // DEBUG
+};
+
+function vindKlant(klantid) {
+    // JSON query om klant te vinden
+    var json_url = "jsonserver.php";
+    var json_query = { act: "vind_klant", klant_id: klantid };
+    var deKlant = JSON.parse(
+            $.ajax({
+                type: "POST",
+                url: json_url,
+                data: json_query,
+                async: false
+            }).responseText);
+    //console.log(deKlant);     // DEBUG
+    return deKlant;
+}
+
+function zetTopReactie() {
+    var nReactieId = parseInt(reactiesAll[0].klant_id);
+    var sReactieTekst = reactiesAll[0].reactie;
+    var oDeKlant = vindKlant(nReactieId);
+    //console.log(oDeKlant);   // DEBUG
+    var sKlantNaam = oDeKlant.vnaam;
+    var sKlantGemeente = oDeKlant.gemeente;
+    $('#floatreactie_tekst')
+            .append($('<p>').html("\"" + sReactieTekst + "\""))
+            .append($('<p>').html("- " + sKlantNaam + ", " + sKlantGemeente));
+}
+
+function zetBusinessRuimte() {
+    var eReactielijst = $("#reactielijst");
+    for (var i = 0; i < reactiesAll.length; i++) {
+        var eReactieP = $('<p>');
+        var nReactieId = parseInt(reactiesAll[i].klant_id);
+        var sReactieTekst = reactiesAll[i].reactie;
+        var oDeKlant = vindKlant(nReactieId);
+        var sKlantNaam = oDeKlant.vnaam;
+        var sKlantGemeente = oDeKlant.gemeente;
+        eReactieP.html("<b>" + oDeKlant.vnaam + " uit " + oDeKlant.gemeente + "</b><br>\"" + sReactieTekst + "\"").appendTo(eReactielijst);
+    };
+}
+
+function reactieveldToggle() {
+    if (klant.id != null & klant.id != 0) {
+        $('#reactieinterface h4').html("Zelf een reactie plaatsen, " + klant.vnaam + "?");
+    } else {
+        $('#reactieinterface h4').html("Zelf een reactie plaatsen?");
+    }
+    console.log("Lockout-item: " + localStorage.getItem('lockout'));
+    if (localStorage.getItem('lockout') !== null) {
+        console.log("ReactieveldToggle zegt dat lockout bestaat");  // DEBUG
+        $('#reactieveld_ingelogd').hide();
+        $('#reactieveld_nietingelogd').hide();
+        $('#lockoutbericht').show();
+    } else {
+        console.log("ReactieveldToggle zegt dat lockout niet bestaat");
+        $('#reactieveld_ingelogd').toggle();
+        $('#reactieveld_nietingelogd').toggle();
+        $('#lockoutbericht').hide();
+    }
+};
+
+function bevestigReactie() {
+    // checken of er invoer is
+    $('#reactie_tekst').css({ outline: "none" });
+    if ($('#reactie_tekst').val() == "") {
+        alert("Gelieve een tekst in te vullen");
+        $('#reactie_tekst').css({ outline: "1px dotted red" }).focus();
+        return;
+    }
+    console.log($('#reactie_tekst').val()); // DEBUG
+    var sInvoerTekst = $('#reactie_tekst').val();
+    sInvoerTekst = sInvoerTekst.replace(/\n/g, " ").replace(/[^a-zA-Z 0-9!,&]+/g, "");
+    console.log(sInvoerTekst);  // DEBUG
+    $('#reactie_tekst').val(sInvoerTekst);
+    // invoer doorsturen naar database
+    var str_reactie = sInvoerTekst;
+    var klant_id = parseInt(klant.id);
+    $.post("jsonserver.php", {act: "plaats_reactie", reactie: str_reactie, klant_id: klant_id })
+            .done(function(result){
+                console.log(result);
+                $('#error').hide();
+                $('#info').hide();
+                $('#interactie')
+                        .html("<p>Uw reactie werd geplaatst, dank!</p>")
+                        .attr("title", "Klik om te sluiten")
+                        .css({ cursor: "pointer"})
+                        .show()
+                        .on("click", function(e){
+                            e.preventDefault();
+                            $('#business').soloFocus();
+                        });
+                $('#interact').soloFocus();
+                lockoutReactie();
+            })
+            .fail(function(result){
+                console.log(result.statusText);
+                $('#interactie').hide();
+                $('#info').hide();
+                $('#error')
+                    .html("Er is iets misgegaan tijdens het doorsturen van uw reactie, probeer opnieuw...")
+                    .attr("title", "Klik om te sluiten")
+                    .show()
+                    .on("click", function(){
+                        $('#business').soloFocus();
+                    });
+                $('#interact').soloFocus();
+            });
+}
+
+function lockoutReactie() {
+    var nuTijd = new Date().getTime();
+    if(localStorage.lockout) {
+        // er is een lockout aangeroepen geweest op deze computer
+        console.log("lockoutReactie-> er is lockout aangeroepen geweest");  // DEBUG
+        if (localStorage.lockout + 60*1000 < nuTijd) {
+            console.log("lockoutReactie-> de lockout is verlopen");  // DEBUG
+            // toon reactiemogelijkheid
+            $('#reactieveld_ingelogd').hide();
+            $('#reactieveld_nietingelogd').show();
+            if (klant.id != null && klant.id != 0) {
+                reactieveldToggle();
+            }
+            // verberg lockoutbericht
+            $('#lockoutbericht').hide();
+            // verwijder lockout
+            localStorage.removeItem('lockout');
+        } else {
+            // verberg reactiemogelijkheid tot timeout
+            $('#reactieveld_ingelogd').hide();
+            $('#reactieveld_nietingelogd').hide();
+            $('#lockoutbericht').show();
+        }
+    } else {
+        // er is nog geen lockout aangeroepen geweest, dus net een reactie geplaatst
+        localStorage.setItem('lockout', nuTijd);
+        lockoutReactie();
+    }
+}
+
+function lockoutCheck() {
+    var nuTijd = new Date().getTime();
+    console.log("The time is Now -> " + nuTijd);
+    if(localStorage.lockout) {
+        // er is een lockout aangeroepen geweest op deze computer
+        console.log("lockoutCheck-> er is lockout var aanwezig: " + localStorage.lockout);  // DEBUG
+        console.log("Lockout + 60*1000 = " + (parseInt(localStorage.lockout)) + 5*1000);
+        if (parseInt(localStorage.lockout) + 60*1000 < nuTijd) {
+            console.log("lockoutCheck-> de lockout is verlopen");  // DEBUG
+            // verberg lockoutbericht
+            $('#lockoutbericht').hide();
+            // verwijder lockout
+            localStorage.removeItem('lockout');
+        } else {
+            console.log("lockoutCheck-> de lockout is nog geldig");  // DEBUG
+            // verberg reactiemogelijkheid tot timeout
+            $('#lockoutbericht').show();
+        }
+    } else {
+        // er is geen lockout aanwezig
+        $('#lockoutbericht').hide();
+    }
+}

@@ -7,6 +7,7 @@ use resource\Data\KlantDAO;
 use resource\Data\ProductDAO;
 use resource\Data\BestellingDAO;
 use resource\Data\BestellijnDAO;
+use resource\Data\ReactieDAO;
 use resource\Exception\FouteInvoerException;
 use resource\Exception\FoutPaswoordException;
 use resource\Exception\KlantNietGevondenException;
@@ -189,4 +190,16 @@ class PizzaService {
         return true;
     }
     
+    /* * * * * Klantreactie functies * * * * */
+    
+    public function geefAlleReacties() {
+        $reactieDAO = new ReactieDAO();
+        $reactieLijst = $reactieDAO->getAll();
+        return $reactieLijst;
+    }
+    
+    public function plaatsReactie($klant_id, $reactie) {
+        $reactieDAO = new ReactieDAO();
+        $reactieDAO->createReactie($klant_id, $reactie);
+    }
 }

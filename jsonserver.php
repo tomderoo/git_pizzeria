@@ -79,6 +79,33 @@ switch ($_POST["act"]) {
             echo(json_encode(0));
         }
         break;
+        
+    case "show_reacties":
+        try {
+            $reacties = $service->geefAlleReacties();
+        } catch (resource\Exception\OnvindbaarException $ex) {
+            $reacties = "VOID";
+        }
+        $array = (array) $reacties;
+        echo(json_encode($array));
+        break;
+    
+    case "plaats_reactie":
+        $klant_id = $_POST["klant_id"];
+        $reactie = $_POST["reactie"];
+        $service->plaatsReactie($klant_id, $reactie);
+        break;
+    
+    case "vind_klant":
+        $klant_id = $_POST["klant_id"];
+        try {
+            $klant = $service->geefGebruikerById($klant_id);
+        } catch (resource\Exception\KlantNietGevondenException $ex) {
+            $klant = "VOID";
+        }
+        //echo $klant;
+        echo(json_encode($klant));
+        break;
 
     default:
         try {

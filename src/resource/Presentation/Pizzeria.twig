@@ -84,6 +84,11 @@
                 </div>
             </section>
             
+            <section id="floatreactie">
+                <h3>Wat onze klanten zeggen...</h3>
+                <div id="floatreactie_tekst"></div>
+            </section>
+            
             <article id="mandje">
                 <h3>Bestellen</h3>
                 <div id="mandje_leveradres">
@@ -130,9 +135,22 @@
             </article>
             
             <article id="business">
-                <h3 id="business_titel">Authentic Pizza's, tot uw dienst!</h3>
-                
-                <div id="business_container">Lorem ipsum blablabla</div>
+                <h3 id="business_titel">Authentic Pizza, tot uw dienst!</h3>
+                <div id="business_tekst"><p>Bij <em>Authentic Pizza</em> gaan we tot het uiterste om de lekkerste gerechten te bereiden en deze zo snel mogelijk bij u thuis af te leveren! De reacties op onze service liegen er niet om...<p></div>
+                <div id="business_container">
+                    <div id="reactielijst"></div>
+                    <div id="reactieinterface">
+                        <h4>Zelf een reactie plaatsen?</h4>
+                        <div id="reactieveld_ingelogd">
+                            <textarea id="reactie_tekst" placeholder="Laat weten wat u van ons denkt! (max. 100 tekens)" maxlength="100"></textarea>
+                            <a id="reactie_plaatsen" href="#">Plaats uw reactie</a>
+                        </div>
+                        <div id="reactieveld_nietingelogd">
+                            <a id="reactie_login" href="#">Aanmelden</a>
+                        </div>
+                        <div id="lockoutbericht"><p>U hebt recent een reactie geplaatst, waarvoor onze dank. Het duurt eventjes voor u een nieuwe reactie kan plaatsen; geniet ondertussen van onze pizza's!</p></div>
+                    </div>
+                </div>
             </article>
             
             <article id="user">
