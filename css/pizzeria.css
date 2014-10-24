@@ -101,8 +101,8 @@ div#quickmenu {
 
 div#quickmenu a {
     background-color: #c41;
-    padding: 9px 15px;
-    margin-right: 7px;
+    padding: 9px 10px;
+    margin-right: 5px;
     border-radius: 20px;
     color: #ccc;
     line-height: 30px;
@@ -451,7 +451,6 @@ article#user div h3 span {
     width: 60%;
     box-sizing: border-box;
     padding: 10px;
-    outline: red dotted 1px;
     float: left;
 }
 
@@ -485,7 +484,6 @@ div#reactielijst p:nth-child(even) {
     width: 40%;
     box-sizing: border-box;
     padding: 10px;
-    outline: green dotted 1px;
     float: right;
     border-radius: 20px;
     background-color: #fdc;

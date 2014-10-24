@@ -16,7 +16,8 @@ class Promotype {
             0 => "Niet in promotie",
             1 => "Suggestie van de chef",
             2 => "Seizoenssuggestie",
-            3 => "Tijdelijke korting"
+            3 => "Tijdelijke korting",
+            4 => "Klantafhankelijke korting"
         );
         return $promotypes;
     }

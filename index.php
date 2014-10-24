@@ -24,11 +24,11 @@ $twigvars = array(
 );
 
 // klant overbrengen
-if (isset($_SESSION["klant"])) {
+/*if (isset($_SESSION["klant"])) {
     $twigvars["klant"] = $_SESSION["klant"];
 } else {
     $twigvars["klant"] = new stdClass();
-}
+}*/
 
 $twigvars["timer"] = $service->ScriptTimer();
 
